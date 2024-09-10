@@ -39,7 +39,7 @@ const MapScreen = ({ route }) => {
             [start, end]
           );
 
-          if (minDistance > 200) {
+          if (minDistance > 1000) {
             navigation.navigate('Deviation');
           }
         }
