@@ -1,21 +1,20 @@
-// App.js
-import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import RouteSelectionScreen from './screens/RouteSelectionScreen';
-import MapScreen from './screens/MapScreen';
-import DeviationScreen from './screens/DeviationScreen';
-
-const Stack = createNativeStackNavigator();
+import { StatusBar } from 'expo-status-bar';
+import { StyleSheet, Text, View } from 'react-native';
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="RouteSelection">
-        <Stack.Screen name="RouteSelection" component={RouteSelectionScreen} />
-        <Stack.Screen name="Map" component={MapScreen} />
-        <Stack.Screen name="Deviation" component={DeviationScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <View style={styles.container}>
+      <Text>Open up App.js to start working on your app!</Text>
+      <StatusBar style="auto" />
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
