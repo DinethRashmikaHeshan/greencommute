@@ -7,7 +7,7 @@ import {
   StyleSheet,
 } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
-import TipsComponent from "./TipsComponent"; // Step 1: Import the TipsComponent
+import TipsComponent from "./TipsComponent"; // Import the TipsComponent
 
 const CalculateFootprint = () => {
   const [fuelConsumption, setFuelConsumption] = useState("");
@@ -49,49 +49,55 @@ const CalculateFootprint = () => {
     <View style={styles.container}>
       <Text style={styles.title}>Calculate Your Carbon Footprint</Text>
 
-      <View style={styles.row}>
-        <Text style={styles.label}>Fuel Consumption:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="liters per 100km"
-          keyboardType="numeric"
-          value={fuelConsumption}
-          onChangeText={(text) => setFuelConsumption(text)}
-        />
-      </View>
+      {/* Container for input fields and button */}
+      <View style={styles.calculatorContainer}>
+        <View style={styles.row}>
+          <Text style={styles.label}>Fuel Consumption:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="liters per 100km"
+            keyboardType="numeric"
+            value={fuelConsumption}
+            onChangeText={(text) => setFuelConsumption(text)}
+          />
+        </View>
 
-      <View style={[styles.row, { zIndex: 1000 }]}>
-        <Text style={styles.label}>Fuel Type:</Text>
-        <DropDownPicker
-          open={open}
-          value={fuelType}
-          items={items}
-          setOpen={setOpen}
-          setValue={setFuelType}
-          setItems={setItems}
-          containerStyle={{ height: open ? 50 : 50, flex: 1 }} // Adjust height based on open state
-          dropDownContainerStyle={[styles.dropDownContainer, { zIndex: 1000 }]} // Customize the dropdown appearance
-          placeholder="Select fuel type" // Display a placeholder when no fuel type is selected
-          placeholderStyle={styles.placeholderStyle} // Placeholder styling
-          searchable={false} // Disable search in dropdown
-          style={styles.input}
-        />
-      </View>
+        <View style={[styles.row, { zIndex: 1000 }]}>
+          <Text style={styles.label}>Fuel Type:</Text>
+          <DropDownPicker
+            open={open}
+            value={fuelType}
+            items={items}
+            setOpen={setOpen}
+            setValue={setFuelType}
+            setItems={setItems}
+            containerStyle={{ height: open ? 50 : 50, flex: 1 }}
+            dropDownContainerStyle={[
+              styles.dropDownContainer,
+              { zIndex: 1000 },
+            ]}
+            placeholder="Select fuel type"
+            placeholderStyle={styles.placeholderStyle}
+            searchable={false}
+            style={styles.input}
+          />
+        </View>
 
-      <View style={[styles.row, { zIndex: 500 }]}>
-        <Text style={styles.label}>Distance Traveled:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="km"
-          keyboardType="numeric"
-          value={distance}
-          onChangeText={(text) => setDistance(text)}
-        />
-      </View>
+        <View style={[styles.row, { zIndex: 500 }]}>
+          <Text style={styles.label}>Distance Traveled:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="km"
+            keyboardType="numeric"
+            value={distance}
+            onChangeText={(text) => setDistance(text)}
+          />
+        </View>
 
-      <TouchableOpacity style={styles.button} onPress={calculateFootprint}>
-        <Text style={styles.buttonText}>🧮 Calculate</Text>
-      </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={calculateFootprint}>
+          <Text style={styles.buttonText}>🧮 Calculate</Text>
+        </TouchableOpacity>
+      </View>
 
       {result && (
         <View>
@@ -101,7 +107,7 @@ const CalculateFootprint = () => {
             </Text>
           </View>
 
-          {/* Step 3: Render TipsComponent and pass the result as a prop */}
+          {/* Render TipsComponent and pass the result as a prop */}
           <TipsComponent result={result} />
         </View>
       )}
@@ -116,10 +122,29 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   title: {
-    fontSize: 24,
-    fontWeight: "bold",
+    fontSize: 28,
+    fontWeight: "700",
     textAlign: "center",
     marginBottom: 20,
+    color: "#2E7D32",
+    textTransform: "uppercase",
+    fontFamily: "Arial",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 3, // Add elevation for Android
+  },
+  calculatorContainer: {
+    backgroundColor: "#B2E5B0", // Light green background for the calculator section
+    borderRadius: 15,
+    padding: 20,
+    marginBottom: 20,
+    elevation: 5,
+    shadowColor: "#000", // Adds shadow for iOS
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
   },
   row: {
     flexDirection: "row",
@@ -136,12 +161,14 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 3,
     elevation: 4,
-    borderWidth: 0, // Remove border
+    borderWidth: 0,
     flex: 1,
   },
   label: {
     fontSize: 16,
     marginRight: 10,
+    fontFamily: "Arial",
+    fontWeight: "regular",
   },
   dropDownContainer: {
     backgroundColor: "#FFFFFF",
@@ -153,7 +180,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 3,
     elevation: 4,
-    borderWidth: 0, // Remove border
+    borderWidth: 0,
     flex: 1,
   },
   placeholderStyle: {
@@ -165,9 +192,11 @@ const styles = StyleSheet.create({
     padding: 15,
     alignItems: "center",
     marginBottom: 20,
+    marginTop: 20,
   },
   buttonText: {
     fontSize: 18,
+    fontWeight: "bold",
     color: "#FFFFFF",
   },
   resultContainer: {
@@ -176,6 +205,11 @@ const styles = StyleSheet.create({
     padding: 20,
     alignItems: "center",
     marginBottom: 20,
+    elevation: 3, // Adds shadow for Android
+    shadowColor: "#000", // Adds shadow for iOS
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
   },
   resultText: {
     fontSize: 18,
