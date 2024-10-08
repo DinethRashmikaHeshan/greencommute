@@ -1,27 +1,51 @@
-// screens/MapScreen.js
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Alert, Text, Button, Linking, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Alert, Text, Linking, TouchableOpacity } from 'react-native';
 import MapView, { Marker, Polyline } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { getDistance } from 'geolib';
 import { useNavigation } from '@react-navigation/native';
-import BottomSheet from 'reanimated-bottom-sheet';
-import Animated from 'react-native-reanimated';
-import firebase from '@react-native-firebase/database';
+import Modal from 'react-native-modal';
+import { FontAwesome, MaterialIcons } from '@expo/vector-icons'; // Icons
+import { supabase } from '../lib/supabase';
 
 const MapScreen = ({ route }) => {
   const [location, setLocation] = useState(null);
-  const [carpoolDetails, setCarpoolDetails] = useState([]);
+  const [carpoolDetails, setCarpoolDetails] = useState({
+    VehicleNo: '',
+    VehicleOwnerName: '',
+  });
+  const [userDetails, setUserDetails] = useState({
+    emergencyContact: '',
+  });
   const [remainingDistance, setRemainingDistance] = useState(0);
   const [estimatedTime, setEstimatedTime] = useState('');
+  const [isBottomSheetVisible, setBottomSheetVisible] = useState(false);
   const navigation = useNavigation();
   const { start, end } = route.params;
 
   useEffect(() => {
-    fetchCarpoolDetails();
-    calculateRemainingDistance();
-    
     let subscription;
+
+    const fetchCarpoolDetails = async () => {
+      const { data, error } = await supabase.from('CarPool').select('*').eq('id', 1);
+      if (error) {
+        console.error(error);
+      } else {
+        setCarpoolDetails(data[0]);
+      }
+    };
+
+    const fetchUserDetails = async () => {
+      const { data, error } = await supabase.from('User').select('*').eq('id', 1);
+      if (error) {
+        console.error(error);
+      } else {
+        setUserDetails(data[0]);
+      }
+    };
+
+    fetchCarpoolDetails();
+    fetchUserDetails();
 
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
@@ -46,7 +70,7 @@ const MapScreen = ({ route }) => {
           setRemainingDistance(distance);
           setEstimatedTime(calculateEstimatedTime(distance));
 
-          if (distance > 1000) {
+          if (distance > 10000000000000) {
             navigation.navigate('Deviation');
           }
         }
@@ -60,29 +84,9 @@ const MapScreen = ({ route }) => {
     };
   }, [start, end]);
 
-  const fetchCarpoolDetails = () => {
-    // Fetch carpool members and vehicle details from Firebase
-    firebase.database().ref('/carpoolDetails').on('value', snapshot => {
-      const data = snapshot.val();
-      setCarpoolDetails(data);
-    });
-
-// Retrieve user data by userId
-database.ref('users/' + userId).once('value').then(snapshot => {
-  const userData = snapshot.val();
-  console.log(userData);
-});
-
-// Retrieve carpool group data by carpoolId
-database.ref('carpoolGroups/' + carpoolId).once('value').then(snapshot => {
-  const carpoolData = snapshot.val();
-  console.log(carpoolData);
-});
-  };
-
   const calculateMinDistance = (userLocation, route) => {
     let minDistance = Infinity;
-    route.forEach(point => {
+    route.forEach((point) => {
       const distance = getDistance(
         { latitude: userLocation.latitude, longitude: userLocation.longitude },
         { latitude: point.latitude, longitude: point.longitude }
@@ -95,16 +99,14 @@ database.ref('carpoolGroups/' + carpoolId).once('value').then(snapshot => {
   };
 
   const calculateEstimatedTime = (distance) => {
-    // A simple logic for demo, you can modify it based on your needs
-    const speed = 50; // Assuming average speed of 50 km/h
+    const speed = 50;
     const time = (distance / 1000) / speed * 60;
     return `${Math.round(time)} minutes`;
   };
 
   const shareLiveLocation = () => {
     const message = `I am currently here: https://maps.google.com/?q=${location.coords.latitude},${location.coords.longitude}`;
-    const phoneNumber = carpoolDetails.vehicleOwnerPhoneNumber; // Assumes phone number is stored in Firebase
-
+    const phoneNumber = userDetails.emergencyContact;
     Linking.openURL(`whatsapp://send?phone=${phoneNumber}&text=${message}`);
   };
 
@@ -115,17 +117,26 @@ database.ref('carpoolGroups/' + carpoolId).once('value').then(snapshot => {
     ]);
   };
 
-  const renderContent = () => (
+  const renderBottomSheetContent = () => (
     <View style={styles.bottomSheetContent}>
-      <Text>Vehicle: {carpoolDetails.vehicleNumber}</Text>
-      <Text>Owner: {carpoolDetails.vehicleOwner}</Text>
-      <Text>Remaining Distance: {remainingDistance} meters</Text>
-      <Text>Estimated Time: {estimatedTime}</Text>
-      <Button title="Share Live Location" onPress={shareLiveLocation} />
+      <View style={styles.carpoolSummary}>
+        <Text style={styles.vehicleText}>Vehicle No: {carpoolDetails.VehicleNo}</Text>
+        <Text style={styles.ownerText}>Owner: {carpoolDetails.VehicleOwnerName}</Text>
+        <View style={styles.row}>
+          <FontAwesome name="road" size={24} color="black" />
+          <Text style={styles.detailText}>Remaining Distance: {remainingDistance} meters</Text>
+        </View>
+        <View style={styles.row}>
+          <MaterialIcons name="timer" size={24} color="black" />
+          <Text style={styles.detailText}>Estimated Time: {estimatedTime}</Text>
+        </View>
+      </View>
+      <TouchableOpacity style={styles.shareButton} onPress={shareLiveLocation}>
+        <FontAwesome name="share-alt" size={20} color="white" />
+        <Text style={styles.shareButtonText}>Share Live Location</Text>
+      </TouchableOpacity>
     </View>
   );
-
-  const sheetRef = React.createRef();
 
   return (
     <View style={styles.container}>
@@ -139,7 +150,11 @@ database.ref('carpoolGroups/' + carpoolId).once('value').then(snapshot => {
         }}
       >
         {location && (
-          <Marker coordinate={{ latitude: location.coords.latitude, longitude: location.coords.longitude }} title="Current Location" pinColor="blue" />
+          <Marker
+            coordinate={{ latitude: location.coords.latitude, longitude: location.coords.longitude }}
+            title="Current Location"
+            pinColor="blue"
+          />
         )}
         <Marker coordinate={start} title="Start" />
         <Marker coordinate={end} title="End" />
@@ -147,15 +162,21 @@ database.ref('carpoolGroups/' + carpoolId).once('value').then(snapshot => {
       </MapView>
 
       <TouchableOpacity style={styles.emergencyButton} onPress={confirmEmergencyCall}>
+        <FontAwesome name="phone" size={20} color="white" />
         <Text style={styles.emergencyButtonText}>SOS</Text>
       </TouchableOpacity>
 
-      <BottomSheet
-        ref={sheetRef}
-        snapPoints={[300, 50]} // First position fully expanded, second collapsed
-        borderRadius={10}
-        renderContent={renderContent}
-      />
+      <TouchableOpacity style={styles.bottomSheetTrigger} onPress={() => setBottomSheetVisible(true)}>
+        <Text style={styles.bottomSheetTriggerText}>Carpool Details</Text>
+      </TouchableOpacity>
+
+      <Modal
+        isVisible={isBottomSheetVisible}
+        onBackdropPress={() => setBottomSheetVisible(false)}
+        style={styles.bottomSheetModal}
+      >
+        {renderBottomSheetContent()}
+      </Modal>
     </View>
   );
 };
@@ -173,16 +194,71 @@ const styles = StyleSheet.create({
     right: 20,
     backgroundColor: 'red',
     padding: 10,
-    borderRadius: 30,
+    borderRadius: 50,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   emergencyButtonText: {
     color: 'white',
     fontWeight: 'bold',
+    marginLeft: 5,
+  },
+  bottomSheetTrigger: {
+    position: 'absolute',
+    bottom: 20,
+    alignSelf: 'center',
+    backgroundColor: '#007bff',
+    padding: 15,
+    borderRadius: 30,
+  },
+  bottomSheetTriggerText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  bottomSheetModal: {
+    justifyContent: 'flex-end',
+    margin: 0,
   },
   bottomSheetContent: {
     backgroundColor: 'white',
     padding: 20,
-    height: 300,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    height: 250,
+  },
+  carpoolSummary: {
+    marginBottom: 20,
+  },
+  vehicleText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  ownerText: {
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 5,
+  },
+  detailText: {
+    fontSize: 16,
+    marginLeft: 10,
+  },
+  shareButton: {
+    backgroundColor: '#28a745',
+    padding: 15,
+    borderRadius: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  shareButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    marginLeft: 10,
   },
 });
 
