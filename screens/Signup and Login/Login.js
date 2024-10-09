@@ -1,52 +1,56 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Button, Alert, StyleSheet } from 'react-native';
-import { supabase } from '../../lib/supabase'; // Adjust the import based on your project structure
-import { useNavigation } from '@react-navigation/native';
+import React, { useState } from "react";
+import { View, Text, TextInput, Button, Alert, StyleSheet } from "react-native";
+import { supabase } from "../../lib/supabase"; // Adjust the import based on your project structure
+import { useNavigation } from "@react-navigation/native";
 
 const Login = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   const navigation = useNavigation();
 
   const handleLogin = async () => {
     setLoading(true);
-    setError(''); // Reset error state
+    setError(""); // Reset error state
 
     // Validate inputs
     if (!username || !password) {
-      setError('Username and password are required.');
+      setError("Username and password are required.");
       setLoading(false);
       return;
     }
 
     // Fetch user data from the users table
     const { data: user, error: userError } = await supabase
-      .from('users')
-      .select('*')
-      .eq('username', username)
+      .from("users") // Assuming the table is "User", correct if needed
+      .select("*")
+      .eq("username", username)
       .single(); // Ensure only one user with that username
 
     if (userError || !user) {
-      setError('Username or password is incorrect.');
+      setError("Username or password is incorrect.");
       setLoading(false);
       return;
     }
 
-    // Compare the input password with the stored plain text password
+    // Compare the input password with the stored plain text password (Ensure security with hashing in real-world apps)
     if (password !== user.password) {
-      setError('Username or password is incorrect.');
+      setError("Username or password is incorrect.");
       setLoading(false);
       return;
     }
 
-    // If login is successful, clear input fields and navigate to the Rating screen
-    Alert.alert('Success', 'Logged in successfully!');
-    setUsername(''); // Clear username field
-    setPassword(''); // Clear password field
-    navigation.navigate('Rating', { username }); // Passing username as param
+    // If login is successful, set the uid and clear input fields
+    const uid = user.id; // Fetch the user's ID from Supabase
+    Alert.alert("Success", "Logged in successfully!");
+    setUsername(""); // Clear username field
+    setPassword(""); // Clear password field
+
+    // Navigate to CarbonFootprintMain, passing the uid and username
+    navigation.navigate("CarbonFootprintMain", { username, uid });
+
     setLoading(false);
   };
 
@@ -67,7 +71,11 @@ const Login = () => {
         onChangeText={setPassword}
         secureTextEntry
       />
-      <Button title={loading ? "Logging In..." : "Login"} onPress={handleLogin} disabled={loading} />
+      <Button
+        title={loading ? "Logging In..." : "Login"}
+        onPress={handleLogin}
+        disabled={loading}
+      />
     </View>
   );
 };
@@ -76,25 +84,25 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#e9f5ee',
-    justifyContent: 'center',
+    backgroundColor: "#e9f5ee",
+    justifyContent: "center",
   },
   title: {
     fontSize: 28,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 20,
-    color: '#2c3e50',
+    color: "#2c3e50",
   },
   input: {
     height: 40,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     borderWidth: 1,
     borderRadius: 5,
     marginBottom: 15,
     paddingHorizontal: 10,
   },
   errorText: {
-    color: 'red',
+    color: "red",
     marginBottom: 15,
   },
 });

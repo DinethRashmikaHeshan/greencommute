@@ -1,7 +1,9 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
 
-const CarbonFootprintMain = ({ navigation }) => {
+const CarbonFootprintMain = ({ route, navigation }) => {
+  const { username, uid } = route.params; // Get username and uid from route params
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Track Your Carbon Footprint</Text>
@@ -11,7 +13,7 @@ const CarbonFootprintMain = ({ navigation }) => {
 
       <TouchableOpacity
         style={styles.card}
-        onPress={() => navigation.navigate("ViewSavings")}
+        onPress={() => navigation.navigate("ViewSavings", { username, uid })}
       >
         <Image
           source={require("../assets/savings.png")}
@@ -27,7 +29,9 @@ const CarbonFootprintMain = ({ navigation }) => {
 
       <TouchableOpacity
         style={styles.card}
-        onPress={() => navigation.navigate("CalculateFootprint")}
+        onPress={() =>
+          navigation.navigate("CalculateFootprint", { username, uid })
+        }
       >
         <Image
           source={require("../assets/calculator.png")}
@@ -43,7 +47,7 @@ const CarbonFootprintMain = ({ navigation }) => {
 
       <TouchableOpacity
         style={styles.card}
-        onPress={() => navigation.navigate("SetGoals")}
+        onPress={() => navigation.navigate("SetGoals", { username, uid })}
       >
         <Image
           source={require("../assets/goals.png")}
