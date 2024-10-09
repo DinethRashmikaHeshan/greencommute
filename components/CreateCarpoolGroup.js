@@ -3,8 +3,9 @@ import { View, Text, TextInput, Button, Switch, Alert, Platform } from 'react-na
 import { useDispatch, useSelector } from 'react-redux';
 import tw from 'tailwind-react-native-classnames';
 import { supabase } from '../lib/supabase';
-import { selectOrigin, selectDestination } from '../slices/navSlice';
+import { selectTravelTimeInformation, selectOrigin, selectDestination } from '../slices/navSlice';
 import DateTimePicker from '@react-native-community/datetimepicker';
+
 
 const CreateCarpoolGroup = ({ navigation , route} ) => {
   const [groupName, setGroupName] = useState('');
@@ -15,6 +16,8 @@ const CreateCarpoolGroup = ({ navigation , route} ) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const { username } = route.params;
+  const travelTimeInformation = useSelector(selectTravelTimeInformation);
+
 
 
   // Select origin and destination from Redux store
@@ -42,6 +45,7 @@ const CreateCarpoolGroup = ({ navigation , route} ) => {
         destination: destination.description,
         schedule_time: scheduleDate.toISOString(), // Save the scheduled time in ISO format
         owner: username, // Save the username to the database
+        distance: travelTimeInformation.distance.text
       }]);
 
     if (error) {
