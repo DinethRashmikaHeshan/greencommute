@@ -1,95 +1,61 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Button, Alert, Modal, TextInput } from 'react-native';
-import { supabase } from '../../lib/supabase'; // Adjust the path as necessary
+import { supabase } from '../../lib/supabase';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 
 const Review = () => {
-  const [reviews, setReviews] = useState([]); // Initialize with an empty array
-  const currentUser = "USER002"; // Example of signed-in user ID (for demonstration)
-
+  const [reviews, setReviews] = useState([]);
+  const currentUser = "USER002"; // Example of signed-in user ID
   const [modalVisible, setModalVisible] = useState(false);
   const [newReviewText, setNewReviewText] = useState('');
-  const [newReviewRating, setNewReviewRating] = useState(5); // Default rating
+  const [newReviewRating, setNewReviewRating] = useState(5);
   const [newCarpoolName, setNewCarpoolName] = useState('');
+  const [updateReviewID, setUpdateReviewID] = useState(null); // State to hold the review ID being updated
 
   const navigation = useNavigation();
 
   const addReview = async () => {
-    const newReview = {
-      carpoolName: newCarpoolName,
-      rating: newReviewRating,
-      reviewText: newReviewText,
-      userID: currentUser,
-      id: Math.random().toString(), // Generate a unique ID
-    };
-
-    // Update local state
-    setReviews(prevReviews => [...prevReviews, newReview]);
-
-    // Reset input fields and close modal
-    setNewReviewText('');
-    setNewCarpoolName('');
-    setModalVisible(false);
-    Alert.alert('Success', 'Review added successfully.');
-
-    // Insert the new review into Supabase
-    const { error } = await supabase.from('Review').insert([newReview]);
-    if (error) {
-      console.error('Error inserting review:', error);
-    }
+    navigation.navigate('CRating')
   };
 
   const deleteReview = async (reviewID) => {
-    // Delete from Supabase
     const { error } = await supabase.from('Review').delete().eq('id', reviewID);
     if (error) {
       console.error('Error deleting review:', error);
       return;
     }
-
-    // Update local state
     setReviews(prevReviews => prevReviews.filter(review => review.id !== reviewID));
     Alert.alert('Success', 'Review deleted successfully.');
   };
 
-  const updateReview = async (reviewID, newText) => {
-    // Update in Supabase
-    const { error } = await supabase.from('Review').update({ reviewText: newText }).eq('id', reviewID);
+  const updateReview = async () => {
+    const { error } = await supabase.from('Review').update({ reviewText: newReviewText, rating: newReviewRating }).eq('id', updateReviewID);
     if (error) {
       console.error('Error updating review:', error);
       return;
     }
-
-    // Update local state
-    setReviews(prevReviews =>
-      prevReviews.map(review =>
-        review.id === reviewID ? { ...review, reviewText: newText } : review
-      )
-    );
+  
+    // Fetch the latest data to refresh the reviews
+    await getData(); // Refresh the screen after update
+    resetForm();
     Alert.alert('Success', 'Review updated successfully.');
   };
+  
 
-  const update = () => {
-    navigation.navigate('CRating')
-  }
+  const resetForm = () => {
+    setNewReviewText('');
+    setNewCarpoolName('');
+    setModalVisible(false);
+    setUpdateReviewID(null);
+  };
 
   const handleUpdate = (reviewID) => {
     const reviewToUpdate = reviews.find(review => review.id === reviewID);
-
     if (reviewToUpdate) {
-      Alert.prompt(
-        'Update Review',
-        'Enter new review text:',
-        [
-          { text: 'Cancel', style: 'cancel' },
-          {
-            text: 'OK',
-            onPress: () => update(),
-          },
-        ],
-        'plain-text',
-        reviewToUpdate.reviewText // Set the current review text as the default value
-      );
+      setNewReviewText(reviewToUpdate.reviewText);
+      setNewCarpoolName(reviewToUpdate.carpoolName);
+      setUpdateReviewID(reviewID);
+      setModalVisible(true); // Open the modal for updating
     }
   };
 
@@ -105,26 +71,26 @@ const Review = () => {
   // Use useFocusEffect to refetch data when the screen comes into focus
   useFocusEffect(
     React.useCallback(() => {
-      getData(); // Fetch reviews when component mounts or when screen comes into focus
+      getData();
     }, [])
   );
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Reviews</Text>
-      <Button title="Create Review" onPress={() => update()} />
+      <Button title="Create Review" onPress={() => addReview()} />
       <ScrollView>
         {reviews.map((review) => (
           <View key={review.id} style={styles.reviewContainer}>
             <Text style={styles.carpoolName}>Carpool Name: {review.carpoolName}</Text>
             <Text style={styles.reviewText}>{review.reviewText}</Text>
             <Text style={styles.rating}>Rating: {review.rating} ⭐</Text>
-            {review.userID === currentUser ? ( // Show buttons only for the signed-in user
+            {review.userID === currentUser ? (
               <View style={styles.buttonContainer}>
                 <Button title="Update" onPress={() => handleUpdate(review.id)} />
                 <Button
                   title="Delete"
-                  color="#FF5733" // Red color for delete button
+                  color="#FF5733"
                   onPress={() => deleteReview(review.id)}
                 />
               </View>
@@ -133,21 +99,21 @@ const Review = () => {
         ))}
       </ScrollView>
 
-      {/* Modal for Creating a Review */}
+      {/* Modal for Creating or Updating a Review */}
       <Modal
         animationType="slide"
         transparent={true}
         visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
+        onRequestClose={resetForm}
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalView}>
-            <Text style={styles.modalTitle}>Create a Review</Text>
+            <Text style={styles.modalTitle}>{updateReviewID ? 'Update Review' : 'Create a Review'}</Text>
             <TextInput
               style={styles.input}
               placeholder="Carpool Name"
               value={newCarpoolName}
-              onChangeText={setNewCarpoolName}
+              editable={false} // Make the input read-only
             />
             <TextInput
               style={styles.input}
@@ -162,8 +128,8 @@ const Review = () => {
               value={String(newReviewRating)}
               onChangeText={(text) => setNewReviewRating(Number(text))}
             />
-            <Button title="Submit" onPress={addReview} />
-            <Button title="Cancel" color="#FF5733" onPress={() => setModalVisible(false)} />
+            <Button title={updateReviewID ? "Update" : "Submit"} onPress={updateReviewID ? updateReview : addReview} />
+            <Button title="Cancel" color="#FF5733" onPress={resetForm} />
           </View>
         </View>
       </Modal>
