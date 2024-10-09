@@ -6,9 +6,10 @@ import CarbonFootprintMain from "./screens/CarbonFootprintMain";
 import ViewSavings from "./screens/ViewSavings";
 import CalculateFootprint from "./screens/CalculateFootprint";
 import SetGoals from "./screens/setGoals";
-import RouteSelectionScreen from './screens/RouteSelectionScreen';
-import MapScreen from './screens/MapScreen';
-import DeviationScreen from './screens/DeviationScreen';
+import GoalDetails from "./screens/GoalDetails";
+import RouteSelectionScreen from "./screens/RouteSelectionScreen";
+import MapScreen from "./screens/MapScreen";
+import DeviationScreen from "./screens/DeviationScreen";
 
 const Stack = createStackNavigator();
 const App = () => {
@@ -25,12 +26,12 @@ const App = () => {
           component={CalculateFootprint}
         />
         <Stack.Screen name="SetGoals" component={SetGoals} />
-      
-      <Stack.Screen name="RouteSelection" component={RouteSelectionScreen} />
+        <Stack.Screen name="GoalDetails" component={GoalDetails} />
+
+        <Stack.Screen name="RouteSelection" component={RouteSelectionScreen} />
         <Stack.Screen name="Map" component={MapScreen} />
         <Stack.Screen name="Deviation" component={DeviationScreen} />
-        </Stack.Navigator>
-      
+      </Stack.Navigator>
     </NavigationContainer>
   );
 };
