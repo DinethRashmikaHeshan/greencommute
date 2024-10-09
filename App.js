@@ -16,10 +16,12 @@ const Stack = createNativeStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Rating">
+      <Stack.Navigator initialRouteName="RouteSelection">
         <Stack.Screen name="RouteSelection" component={RouteSelectionScreen} />
         <Stack.Screen name="Map" component={MapScreen} />
         <Stack.Screen name="Deviation" component={DeviationScreen} />
+
+        //Rating
         <Stack.Screen name="CRating" component={CreateReview} />
         <Stack.Screen name="Rating" component={Review} />
         <Stack.Screen name="Test" component={ConnectivityTest} />
