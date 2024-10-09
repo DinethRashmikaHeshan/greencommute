@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Button, Alert } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
+import { View, StyleSheet, Button, Alert, TextInput } from 'react-native';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import { useNavigation } from '@react-navigation/native';
 
@@ -9,6 +8,8 @@ const GOOGLE_PLACES_API_KEY = 'AIzaSyAlr9ejliXP037xHQtnJ2zscbPGxczkUrM'; // Repl
 const RouteSelectionScreen = () => {
   const [start, setStart] = useState(null);
   const [end, setEnd] = useState(null);
+  const [userId, setUserId] = useState('');
+  const [carpoolId, setCarpoolId] = useState('');
   const [region, setRegion] = useState({
     latitude: 37.78825,
     longitude: -122.4324,
@@ -29,11 +30,16 @@ const RouteSelectionScreen = () => {
   };
 
   const handleNavigate = () => {
-    if (start && end) {
-      navigation.navigate('Map', { start, end });
+    if (start && end && userId && carpoolId) {
+      navigation.navigate('Map', { start, end , userId, carpoolId });
     } else {
-      Alert.alert('Error', 'Please select both start and end points.');
+      Alert.alert('Error', 'Please select both start and end points, and enter User ID and Carpool ID.');
     }
+  };
+
+  const userld = "5f43b03e-1728-4c83-a105-9daad55b3c8b";
+  const handleMNavigate = () => {
+    navigation.navigate('Contact', { userId });
   };
 
   const handleLocationSelect = (data, details, setLocation) => {
@@ -71,6 +77,23 @@ const RouteSelectionScreen = () => {
         styles={{ textInput: styles.textInput }}
       />
 
+      <TextInput
+        style={styles.input}
+        placeholder="Enter User ID"
+        value={userId}
+        onChangeText={setUserId}
+        keyboardType="numeric"
+      />
+
+      <TextInput
+        style={styles.input}
+        placeholder="Enter Carpool ID"
+        value={carpoolId}
+        onChangeText={setCarpoolId}
+        keyboardType="numeric"
+      />
+
+      <Button title="Go to MangeContact" onPress={handleMNavigate} />
       <Button title="Go to Map Screen" onPress={handleNavigate} />
     </View>
   );
@@ -79,9 +102,7 @@ const RouteSelectionScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  map: {
-    ...StyleSheet.absoluteFillObject,
+    padding: 16,
   },
   textInput: {
     height: 44,
@@ -91,6 +112,14 @@ const styles = StyleSheet.create({
     borderColor: '#ddd',
     paddingHorizontal: 10,
     marginBottom: 10,
+  },
+  input: {
+    height: 44,
+    borderColor: '#ddd',
+    borderWidth: 1,
+    marginBottom: 10,
+    paddingHorizontal: 10,
+    fontSize: 16,
   },
 });
 

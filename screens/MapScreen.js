@@ -1,12 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Alert, Text, Linking, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Alert, Text, Linking, TouchableOpacity, Image, Pressable } from 'react-native';
 import MapView, { Marker, Polyline } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { getDistance } from 'geolib';
 import { useNavigation } from '@react-navigation/native';
 import Modal from 'react-native-modal';
-import { FontAwesome, MaterialIcons } from '@expo/vector-icons'; // Icons
+import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import { supabase } from '../lib/supabase';
+import axios from 'axios'; // Import axios for API requests
+import { FontFamily, Color, FontSize, Padding, Border } from "./globalstyles";
+import arrow from "../assets/Vector.svg";
+
+const GOOGLE_MAPS_API_KEY = 'AIzaSyAlr9ejliXP037xHQtnJ2zscbPGxczkUrM'; // Replace with your Google API key
 
 const MapScreen = ({ route }) => {
   const [location, setLocation] = useState(null);
@@ -15,31 +20,35 @@ const MapScreen = ({ route }) => {
     VehicleOwnerName: '',
   });
   const [userDetails, setUserDetails] = useState({
-    emergencyContact: '',
+    phone_number: '',
   });
   const [remainingDistance, setRemainingDistance] = useState(0);
   const [estimatedTime, setEstimatedTime] = useState('');
-  const [isBottomSheetVisible, setBottomSheetVisible] = useState(false);
+  const [endingTime, setEndingTime] = useState('');
+  const [routeCoordinates, setRouteCoordinates] = useState([]); // New state to store route coordinates
   const navigation = useNavigation();
-  const { start, end } = route.params;
+  const { start, end, userId, carpoolId } = route.params;
 
   useEffect(() => {
     let subscription;
 
     const fetchCarpoolDetails = async () => {
-      const { data, error } = await supabase.from('CarPool').select('*').eq('id', 1);
+      const { data, error } = await supabase.from('CarPool').select('*').eq('id', carpoolId);
       if (error) {
         console.error(error);
       } else {
+        console.log(data[0]);
         setCarpoolDetails(data[0]);
       }
     };
 
     const fetchUserDetails = async () => {
-      const { data, error } = await supabase.from('User').select('*').eq('id', 1);
+      const { data, error } = await supabase.from('emergency_contacts').select('*').eq('user_id', userId).eq('is_active', true);
+      console.log(true);
       if (error) {
         console.error(error);
       } else {
+        console.log(data[0]);
         setUserDetails(data[0]);
       }
     };
@@ -69,12 +78,16 @@ const MapScreen = ({ route }) => {
 
           setRemainingDistance(distance);
           setEstimatedTime(calculateEstimatedTime(distance));
+          setEndingTime(endTime(estimatedTime));
 
-          if (distance > 10000000000000) {
+          if (distance > 200) {
             navigation.navigate('Deviation');
           }
         }
       );
+
+      // Fetch the route with actual roads
+      fetchRoute(start, end);
     })();
 
     return () => {
@@ -83,6 +96,58 @@ const MapScreen = ({ route }) => {
       }
     };
   }, [start, end]);
+
+  const fetchRoute = async (start, end) => {
+    try {
+      const response = await axios.get(
+        `https://maps.googleapis.com/maps/api/directions/json?origin=${start.latitude},${start.longitude}&destination=${end.latitude},${end.longitude}&key=${GOOGLE_MAPS_API_KEY}`
+      );
+
+      if (response.data.routes.length) {
+        const points = decodePolyline(response.data.routes[0].overview_polyline.points);
+        setRouteCoordinates(points);
+      }
+    } catch (error) {
+      console.error('Error fetching route:', error);
+    }
+  };
+
+  const decodePolyline = (encoded) => {
+    let points = [];
+    let index = 0,
+      len = encoded.length;
+    let lat = 0,
+      lng = 0;
+
+    while (index < len) {
+      let b, shift = 0,
+        result = 0;
+      do {
+        b = encoded.charCodeAt(index++) - 63;
+        result |= (b & 0x1f) << shift;
+        shift += 5;
+      } while (b >= 0x20);
+      let dlat = (result & 1) ? ~(result >> 1) : (result >> 1);
+      lat += dlat;
+
+      shift = 0;
+      result = 0;
+      do {
+        b = encoded.charCodeAt(index++) - 63;
+        result |= (b & 0x1f) << shift;
+        shift += 5;
+      } while (b >= 0x20);
+      let dlng = (result & 1) ? ~(result >> 1) : (result >> 1);
+      lng += dlng;
+
+      points.push({
+        latitude: lat / 1e5,
+        longitude: lng / 1e5,
+      });
+    }
+
+    return points;
+  };
 
   const calculateMinDistance = (userLocation, route) => {
     let minDistance = Infinity;
@@ -99,10 +164,29 @@ const MapScreen = ({ route }) => {
   };
 
   const calculateEstimatedTime = (distance) => {
-    const speed = 50;
-    const time = (distance / 1000) / speed * 60;
+    const speed = 50; // Assuming 50 km/h speed
+    const time = (distance / 1000) / speed * 60; // in minutes
     return `${Math.round(time)} minutes`;
   };
+
+  const endTime = (remainingMinutes) => {
+    // Get the current time
+    const currentTime = new Date();
+  
+    // Add the remaining minutes to the current time
+    currentTime.setMinutes(currentTime.getMinutes() + remainingMinutes);
+  
+    // Extract the hours and minutes
+    const hours = currentTime.getHours();
+    const minutes = currentTime.getMinutes();
+  
+    // Format the time in hours and minutes, ensuring leading zeros if necessary
+    const formattedHours = hours < 10 ? `0${hours}` : hours;
+    const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+  
+    return `${formattedHours}:${formattedMinutes}`;
+  };
+
 
   const shareLiveLocation = () => {
     const message = `I am currently here: https://maps.google.com/?q=${location.coords.latitude},${location.coords.longitude}`;
@@ -119,22 +203,28 @@ const MapScreen = ({ route }) => {
 
   const renderBottomSheetContent = () => (
     <View style={styles.bottomSheetContent}>
-      <View style={styles.carpoolSummary}>
-        <Text style={styles.vehicleText}>Vehicle No: {carpoolDetails.VehicleNo}</Text>
-        <Text style={styles.ownerText}>Owner: {carpoolDetails.VehicleOwnerName}</Text>
-        <View style={styles.row}>
-          <FontAwesome name="road" size={24} color="black" />
-          <Text style={styles.detailText}>Remaining Distance: {remainingDistance} meters</Text>
-        </View>
-        <View style={styles.row}>
-          <MaterialIcons name="timer" size={24} color="black" />
-          <Text style={styles.detailText}>Estimated Time: {estimatedTime}</Text>
-        </View>
-      </View>
-      <TouchableOpacity style={styles.shareButton} onPress={shareLiveLocation}>
-        <FontAwesome name="share-alt" size={20} color="white" />
-        <Text style={styles.shareButtonText}>Share Live Location</Text>
-      </TouchableOpacity>
+      <View>
+          <Text style={styles.title}>Your ETA {endingTime}  </Text>
+          </View>
+          <Image style={styles.frameItem} resizeMode="cover" source="" />
+          <View style={styles.frameContainer}>
+          <View style={styles.frameWrapper}>
+          <View style={styles.imageCircleParent}>
+          <Image style={styles.imageCircleIcon} resizeMode="cover" source="" />
+          <View style={styles.caa5366Parent}>
+          <Text style={[styles.caa5366, styles.signUpTypo]}>{carpoolDetails.VehicleNo}</Text>
+          <Text style={[styles.nadunSilva, styles.caa5366Position]}>{carpoolDetails.VehicleOwnerName}</Text>
+          </View>
+          </View>
+          </View>
+          <View style={styles.frameWrapper}>
+          <View style={[styles.button, styles.buttonShadowBox]} >
+          <TouchableOpacity onPress={shareLiveLocation}>
+            <Text style={[styles.signUp, styles.signUpTypo]}>Share Ride</Text>
+          </TouchableOpacity>
+          </View>
+          </View>
+          </View>
     </View>
   );
 
@@ -158,25 +248,17 @@ const MapScreen = ({ route }) => {
         )}
         <Marker coordinate={start} title="Start" />
         <Marker coordinate={end} title="End" />
-        <Polyline coordinates={[start, end]} strokeColor="#000" strokeWidth={3} />
+        <Polyline coordinates={routeCoordinates} strokeColor="#000" strokeWidth={3} />
       </MapView>
 
       <TouchableOpacity style={styles.emergencyButton} onPress={confirmEmergencyCall}>
         <FontAwesome name="phone" size={20} color="white" />
-        <Text style={styles.emergencyButtonText}>SOS</Text>
+        <Text style={styles.emergencyButtonText}>Emergency</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.bottomSheetTrigger} onPress={() => setBottomSheetVisible(true)}>
-        <Text style={styles.bottomSheetTriggerText}>Carpool Details</Text>
-      </TouchableOpacity>
-
-      <Modal
-        isVisible={isBottomSheetVisible}
-        onBackdropPress={() => setBottomSheetVisible(false)}
-        style={styles.bottomSheetModal}
-      >
+      <View style={styles.bottomSheetContainer}>
         {renderBottomSheetContent()}
-      </Modal>
+      </View>
     </View>
   );
 };
@@ -186,45 +268,21 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   map: {
-    ...StyleSheet.absoluteFillObject,
+    width: '100%',
+    height: '100%',
   },
-  emergencyButton: {
+  bottomSheetContainer: {
     position: 'absolute',
-    top: 40,
-    right: 20,
-    backgroundColor: 'red',
-    padding: 10,
-    borderRadius: 50,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  emergencyButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
-    marginLeft: 5,
-  },
-  bottomSheetTrigger: {
-    position: 'absolute',
-    bottom: 20,
-    alignSelf: 'center',
-    backgroundColor: '#007bff',
-    padding: 15,
-    borderRadius: 30,
-  },
-  bottomSheetTriggerText: {
-    color: 'white',
-    fontWeight: 'bold',
-  },
-  bottomSheetModal: {
-    justifyContent: 'flex-end',
-    margin: 0,
-  },
-  bottomSheetContent: {
-    backgroundColor: 'white',
-    padding: 20,
+    bottom: 0,
+    width: '100%',
+    backgroundColor: '#fff',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    height: 250,
+    padding: 16,
+    elevation: 10,
+  },
+  bottomSheetContent: {
+    padding: 16,
   },
   carpoolSummary: {
     marginBottom: 20,
@@ -232,34 +290,161 @@ const styles = StyleSheet.create({
   vehicleText: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 5,
   },
   ownerText: {
     fontSize: 16,
-    marginBottom: 5,
   },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 5,
+    marginVertical: 8,
   },
   detailText: {
+    marginLeft: 8,
     fontSize: 16,
-    marginLeft: 10,
   },
   shareButton: {
     backgroundColor: '#28a745',
-    padding: 15,
-    borderRadius: 10,
+    borderRadius: 5,
+    padding: 12,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
   },
   shareButtonText: {
     color: 'white',
-    fontWeight: 'bold',
-    marginLeft: 10,
+    marginLeft: 8,
+    fontSize: 16,
   },
+  emergencyButton: {
+    position: 'absolute',
+    bottom: 80,
+    right: 20,
+    backgroundColor: 'red',
+    borderRadius: 50,
+    padding: 10,
+    alignItems: 'center',
+  },
+  emergencyButtonText: {
+    color: 'white',
+    fontSize: 16,
+  },
+  buttonShadowBox: {
+    shadowOpacity: 1,
+    shadowOffset: {
+    width: 0,
+    height: -4
+    }
+    },
+    signUpTypo: {
+    fontFamily: FontFamily.buttonNormalMedium,
+    fontWeight: "500"
+    },
+    caa5366Position: {
+    position: "absolute",
+    textAlign: "left"
+    },
+    frameChild: {
+    borderStyle: "solid",
+    borderColor: Color.colorGray,
+    borderTopWidth: 3,
+    width: 50,
+    height: 3
+    },
+    lineWrapper: {
+    alignItems: "center",
+    alignSelf: "stretch"
+    },
+    title: {
+    fontSize: 14,
+    fontWeight: "600",
+    fontFamily: FontFamily.poppinsSemiBold,
+    color: Color.neutralGray1,
+    display: "flex",
+    width: 241,
+    textAlign: "left",
+    alignItems: "center"
+    },
+    frameItem: {
+    width: 20,
+    height: 12
+    },
+    frameGroup: {
+    justifyContent: "space-between",
+    flexDirection: "row",
+    alignItems: "center",
+    alignSelf: "stretch"
+    },
+    imageCircleIcon: {
+    width: 87,
+    height: 87
+    },
+    caa5366: {
+    top: 0,
+    left: 0,
+    fontSize: 32,
+    color: "#000",
+    position: "absolute",
+    textAlign: "left"
+    },
+    nadunSilva: {
+    top: 37,
+    left: 22,
+    fontSize: 20,
+    fontFamily: FontFamily.poppinsRegular,
+    color: Color.colorGray
+    },
+    caa5366Parent: {
+    width: 169,
+    height: 67
+    },
+    imageCircleParent: {
+    gap: 20,
+    flexDirection: "row",
+    alignItems: "center"
+    },
+    frameWrapper: {
+    flexDirection: "row",
+    alignSelf: "stretch"
+    },
+    signUp: {
+    fontSize: FontSize.buttonNormalMedium_size,
+    lineHeight: 24,
+    color: Color.neutralWhite,
+    textAlign: "center",
+    width: 235
+    },
+    button: {
+    shadowColor: "rgba(236, 95, 95, 0.25)",
+    shadowRadius: 14,
+    elevation: 14,
+    borderRadius: 50,
+    backgroundColor: Color.primaryRed,
+    width: 335,
+    justifyContent: "center",
+    paddingHorizontal: 15,
+    paddingVertical: Padding.p_3xs,
+    flexDirection: "row",
+    alignItems: "center"
+    },
+    frameContainer: {
+    paddingBottom: Padding.p_3xs,
+    gap: 25,
+    alignSelf: "stretch"
+    },
+    frameParent: {
+    shadowColor: "rgba(0, 0, 0, 0.25)",
+    shadowRadius: 18,
+    elevation: 18,
+    borderTopLeftRadius: Border.br_3xs,
+    borderTopRightRadius: Border.br_3xs,
+    backgroundColor: Color.neutralWhite,
+    flex: 1,
+    width: "100%",
+    paddingHorizontal: 20,
+    paddingVertical: 17,
+    gap: 15
+    },
 });
 
 export default MapScreen;
