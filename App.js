@@ -6,6 +6,11 @@ import RouteSelectionScreen from './screens/RouteSelectionScreen';
 import MapScreen from './screens/MapScreen';
 import DeviationScreen from './screens/DeviationScreen';
 
+//carpool Rating
+import CreateReview from './screens/ExpenseSharing and Rating/CreateReview';
+import Review from './screens/ExpenseSharing and Rating/Review';
+import ConnectivityTest from './screens/ExpenseSharing and Rating/ConnectivityTest';
+
 const Stack = createNativeStackNavigator();
 
 export default function App() {
@@ -15,6 +20,11 @@ export default function App() {
         <Stack.Screen name="RouteSelection" component={RouteSelectionScreen} />
         <Stack.Screen name="Map" component={MapScreen} />
         <Stack.Screen name="Deviation" component={DeviationScreen} />
+
+        //Rating
+        <Stack.Screen name="CRating" component={CreateReview} />
+        <Stack.Screen name="Rating" component={Review} />
+        <Stack.Screen name="Test" component={ConnectivityTest} />
       </Stack.Navigator>
     </NavigationContainer>
   );
