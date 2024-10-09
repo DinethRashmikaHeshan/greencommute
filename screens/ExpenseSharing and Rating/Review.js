@@ -85,6 +85,7 @@ const Review = ({route}) => {
       <ScrollView>
         {reviews.map((review) => (
           <View key={review.id} style={styles.reviewContainer}>
+            <Text style={styles.carpoolName}>Reviewer Name: {review.userID}</Text>
             <Text style={styles.carpoolName}>Carpool Name: {review.carpoolName}</Text>
             <Text style={styles.reviewText}>{review.reviewText}</Text>
             <Text style={styles.rating}>Rating: {review.rating} ⭐</Text>
