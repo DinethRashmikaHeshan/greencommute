@@ -405,8 +405,8 @@ const SetGoals = ({ route }) => {
       {/* Congratulations message */}
       {completedGoals > 0 && (
         <Text style={styles.congratulationsText}>
-          🎉 You have successfully completed {completedGoals}{" "}
-          {completedGoals === 1 ? "goal" : "goals"}! 🎉
+          🎉 Hooray! 🎉{"\n"}You’ve successfully completed {completedGoals}{" "}
+          {completedGoals === 1 ? "goal" : "goals"}!
         </Text>
       )}
 
