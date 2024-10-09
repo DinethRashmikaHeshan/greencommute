@@ -1,24 +1,25 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Button, Alert, Modal, TextInput } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Button, Alert, Modal, TextInput, ImageBackground } from 'react-native';
 import { supabase } from '../../lib/supabase';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/MaterialIcons'; // Import icons for better visuals
 
-const Review = ({route}) => {
+const bgImage = require('../../assets/background-image.jpeg');
+
+const Review = ({ route }) => {
   const [reviews, setReviews] = useState([]);
-
   const [modalVisible, setModalVisible] = useState(false);
   const [newReviewText, setNewReviewText] = useState('');
   const [newReviewRating, setNewReviewRating] = useState(5);
   const [newCarpoolName, setNewCarpoolName] = useState('');
-  const [updateReviewID, setUpdateReviewID] = useState(null); // State to hold the review ID being updated
+  const [updateReviewID, setUpdateReviewID] = useState(null);
 
   const navigation = useNavigation();
-
   const { username } = route.params;
   const currentUser = username;
 
   const addReview = async () => {
-    navigation.navigate('CRating', { username })
+    navigation.navigate('CRating', { username });
   };
 
   const deleteReview = async (reviewID) => {
@@ -37,13 +38,11 @@ const Review = ({route}) => {
       console.error('Error updating review:', error);
       return;
     }
-  
-    // Fetch the latest data to refresh the reviews
-    await getData(); // Refresh the screen after update
+
+    await getData();
     resetForm();
     Alert.alert('Success', 'Review updated successfully.');
   };
-  
 
   const resetForm = () => {
     setNewReviewText('');
@@ -58,7 +57,7 @@ const Review = ({route}) => {
       setNewReviewText(reviewToUpdate.reviewText);
       setNewCarpoolName(reviewToUpdate.carpoolName);
       setUpdateReviewID(reviewID);
-      setModalVisible(true); // Open the modal for updating
+      setModalVisible(true);
     }
   };
 
@@ -71,7 +70,6 @@ const Review = ({route}) => {
     setReviews(data);
   };
 
-  // Use useFocusEffect to refetch data when the screen comes into focus
   useFocusEffect(
     React.useCallback(() => {
       getData();
@@ -79,9 +77,13 @@ const Review = ({route}) => {
   );
 
   return (
-    <View style={styles.container}>
+    <ImageBackground 
+      source={bgImage}
+      style={styles.container}
+      imageStyle={styles.backgroundImage}
+    >
       <Text style={styles.title}>Reviews</Text>
-      <Button title="Create Review" onPress={() => addReview()} />
+      <Button title="Create Review" onPress={() => addReview()} color="#2ecc71" />
       <ScrollView>
         {reviews.map((review) => (
           <View key={review.id} style={styles.reviewContainer}>
@@ -91,7 +93,7 @@ const Review = ({route}) => {
             <Text style={styles.rating}>Rating: {review.rating} ⭐</Text>
             {review.userID === currentUser ? (
               <View style={styles.buttonContainer}>
-                <Button title="Update" onPress={() => handleUpdate(review.id)} />
+                <Button title="Update" onPress={() => handleUpdate(review.id)} color="#f39c12" />
                 <Button
                   title="Delete"
                   color="#FF5733"
@@ -103,7 +105,6 @@ const Review = ({route}) => {
         ))}
       </ScrollView>
 
-      {/* Modal for Creating or Updating a Review */}
       <Modal
         animationType="slide"
         transparent={true}
@@ -132,12 +133,12 @@ const Review = ({route}) => {
               value={String(newReviewRating)}
               onChangeText={(text) => setNewReviewRating(Number(text))}
             />
-            <Button title={updateReviewID ? "Update" : "Submit"} onPress={updateReviewID ? updateReview : addReview} />
+            <Button title={updateReviewID ? "Update" : "Submit"} onPress={updateReviewID ? updateReview : addReview} color="#2ecc71" />
             <Button title="Cancel" color="#FF5733" onPress={resetForm} />
           </View>
         </View>
       </Modal>
-    </View>
+    </ImageBackground>
   );
 };
 
@@ -147,11 +148,15 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: '#e9f5ee',
   },
+  backgroundImage: {
+    opacity: 0.8,
+  },
   title: {
     fontSize: 28,
     fontWeight: 'bold',
     marginBottom: 20,
     color: '#2c3e50',
+    textAlign: 'center',
   },
   reviewContainer: {
     marginBottom: 20,
