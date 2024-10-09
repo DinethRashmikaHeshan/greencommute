@@ -1,13 +1,17 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import ExpenseSharing from './screens/ExpenseSharing';
+import CreateReview from './screens/CreateReview';
+import Review from './screens/Review';
+
+import AppNavigator from './navigation/AppNavigator';
 
 export default function App() {
   return (
     <View style={styles.container}>
       {/* <Text>Open up App.js to start working on your app!</Text>
       <StatusBar style="auto" /> */}
-      <ExpenseSharing />
+      <CreateReview />
     </View>
   );
 }
