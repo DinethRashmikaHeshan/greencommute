@@ -5,10 +5,12 @@ import RNPickerSelect from 'react-native-picker-select';
 import { Rating } from 'react-native-ratings';
 import { supabase } from '../../lib/supabase'
 
-const CreateReview = () => {
+const CreateReview = ({ route }) => {
   const [carpoolName, setCarpoolName] = useState('');
   const [reviewText, setReviewText] = useState('');
   const [rating, setRating] = useState(0);
+
+  const { username } = route.params
 
   // Dummy data for carpool names
   const carpoolOptions = [
@@ -16,7 +18,7 @@ const CreateReview = () => {
     { label: 'Carpool B', value: 'Carpool B' },
     { label: 'Carpool C', value: 'Carpool C' },
   ];
-  const userID = "USER002"
+  const userID = username
 
   // Handle form submission
   const handleSubmit = async () => {

@@ -3,9 +3,9 @@ import { View, Text, StyleSheet, ScrollView, Button, Alert, Modal, TextInput } f
 import { supabase } from '../../lib/supabase';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 
-const Review = () => {
+const Review = ({route}) => {
   const [reviews, setReviews] = useState([]);
-  const currentUser = "USER002"; // Example of signed-in user ID
+
   const [modalVisible, setModalVisible] = useState(false);
   const [newReviewText, setNewReviewText] = useState('');
   const [newReviewRating, setNewReviewRating] = useState(5);
@@ -14,8 +14,11 @@ const Review = () => {
 
   const navigation = useNavigation();
 
+  const { username } = route.params;
+  const currentUser = username;
+
   const addReview = async () => {
-    navigation.navigate('CRating')
+    navigation.navigate('CRating', { username })
   };
 
   const deleteReview = async (reviewID) => {
