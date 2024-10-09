@@ -190,7 +190,7 @@ const MapScreen = ({ route }) => {
 
   const shareLiveLocation = () => {
     const message = `I am currently here: https://maps.google.com/?q=${location.coords.latitude},${location.coords.longitude}`;
-    const phoneNumber = userDetails.emergencyContact;
+    const phoneNumber = '+94'+userDetails.phone_number;
     Linking.openURL(`whatsapp://send?phone=${phoneNumber}&text=${message}`);
   };
 
@@ -210,7 +210,7 @@ const MapScreen = ({ route }) => {
           <View style={styles.frameContainer}>
           <View style={styles.frameWrapper}>
           <View style={styles.imageCircleParent}>
-          <Image style={styles.imageCircleIcon} resizeMode="cover" source="" />
+          <Image style={styles.imageCircleIcon} resizeMode="cover" source={require("../assets/car.png")}/>
           <View style={styles.caa5366Parent}>
           <Text style={[styles.caa5366, styles.signUpTypo]}>{carpoolDetails.VehicleNo}</Text>
           <Text style={[styles.nadunSilva, styles.caa5366Position]}>{carpoolDetails.VehicleOwnerName}</Text>
@@ -252,9 +252,10 @@ const MapScreen = ({ route }) => {
       </MapView>
 
       <TouchableOpacity style={styles.emergencyButton} onPress={confirmEmergencyCall}>
-        <FontAwesome name="phone" size={20} color="white" />
-        <Text style={styles.emergencyButtonText}>Emergency</Text>
+        {/* <Text style={styles.emergencyButtonText}>SOS</Text> */}
+        <Image style={styles.imageSirenIcon} resizeMode="cover" source={require("../assets/siren-light.png")}/>
       </TouchableOpacity>
+
 
       <View style={styles.bottomSheetContainer}>
         {renderBottomSheetContent()}
@@ -318,17 +319,16 @@ const styles = StyleSheet.create({
   },
   emergencyButton: {
     position: 'absolute',
-    bottom: 80,
-    right: 20,
-    backgroundColor: 'red',
-    borderRadius: 50,
+    top: 40,
+    right: 10,
     padding: 10,
-    alignItems: 'center',
+    borderRadius: 30,
   },
   emergencyButtonText: {
     color: 'white',
-    fontSize: 16,
+    fontWeight: 'bold',
   },
+
   buttonShadowBox: {
     shadowOpacity: 1,
     shadowOffset: {
@@ -379,6 +379,10 @@ const styles = StyleSheet.create({
     width: 87,
     height: 87
     },
+    imageSirenIcon: {
+      width: 40,
+      height: 40
+      },
     caa5366: {
     top: 0,
     left: 0,
@@ -404,8 +408,9 @@ const styles = StyleSheet.create({
     alignItems: "center"
     },
     frameWrapper: {
-    flexDirection: "row",
-    alignSelf: "stretch"
+      flexDirection: "row",
+      justifyContent: "center", // Center the button
+      alignSelf: "stretch",
     },
     signUp: {
     fontSize: FontSize.buttonNormalMedium_size,
@@ -415,17 +420,17 @@ const styles = StyleSheet.create({
     width: 235
     },
     button: {
-    shadowColor: "rgba(236, 95, 95, 0.25)",
-    shadowRadius: 14,
-    elevation: 14,
-    borderRadius: 50,
-    backgroundColor: Color.primaryRed,
-    width: 335,
-    justifyContent: "center",
-    paddingHorizontal: 15,
-    paddingVertical: Padding.p_3xs,
-    flexDirection: "row",
-    alignItems: "center"
+      shadowColor: "rgba(236, 95, 95, 0.25)",
+      shadowRadius: 14,
+      elevation: 14,
+      borderRadius: 50,
+      backgroundColor: Color.primaryRed,
+      justifyContent: "center",
+      paddingHorizontal: 15,
+      paddingVertical: Padding.p_3xs,
+      flexDirection: "row",
+      alignItems: "center",
+      alignSelf: "center", // Center the button itself
     },
     frameContainer: {
     paddingBottom: Padding.p_3xs,

@@ -1,9 +1,9 @@
-
+// import {}
 /* fonts */
 export const FontFamily = {
-    buttonNormalMedium: "Poppins-Medium",
-    poppinsRegular: "Poppins-Regular",
-    poppinsSemiBold: "Poppins-SemiBold",
+    // buttonNormalMedium: "Poppins-Medium",
+//     poppinsRegular: "Poppins-Regular",
+//     poppinsSemiBold: "Poppins-SemiBold",
 };
 /* font sizes */
 export const FontSize = {

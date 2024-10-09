@@ -57,54 +57,54 @@ const Group = ({ navigation }) => {
       {...panResponder.panHandlers}
     >
       <View style={styles.groupChild} />
-      <Text style={[styles.routeDeviationDetected, styles.dismissTypo]}>
-        {`Route Deviation Detected!`}
+      <Text style={[styles.routeDeviationDetected, styles.largeBoldText]}>
+        {`Route Deviation 
+        Detected!`}
       </Text>
       <View style={styles.groupItem} />
       <Image
         style={[styles.groupInner, styles.groupInnerLayout]}
         resizeMode="cover"
-        source={require("../assets/icon.png")} // Replace with your image path
+        source={require("../assets/arrow.png")} // Replace with your image path
       />
-      <Text style={[styles.dismiss, styles.dismissTypo]}>Dismiss</Text>
-      <Text style={[styles.kmAwayFrom, styles.signUpTypo]}>
+      <Text style={[styles.dismiss, styles.largeBoldText]}>Dismiss</Text>
+      <Text style={[styles.kmAwayFrom]}>
         1KM away from your route.
       </Text>
       <TouchableOpacity
         style={[styles.button, styles.buttonShadowBox]}
         onPress={handleCallSOS}
       >
-        <Text style={[styles.signUp, styles.signUpTypo]}>Call SOS</Text>
+        <Text style={[styles.signUp]}>Call SOS</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={[styles.button1, styles.buttonShadowBox]}
         onPress={handleShareLocation}
       >
-        <Text style={[styles.signUp, styles.signUpTypo]}>
+        <Text style={[styles.signUp]}>
           Alert Emergency Contact
         </Text>
       </TouchableOpacity>
       <Image
         style={styles.icons8Alert501}
         resizeMode="cover"
-        source={require("../assets/icon.png")} // Replace with your image path
+        source={require("../assets/alert.png")} // Replace with your image path
       />
       <Image
         style={[styles.unnamed1Icon, styles.groupInnerLayout]}
         resizeMode="cover"
-        source={require("../assets/icon.png")} // Replace with your image path
+        source={require("../assets/deviation.png")} // Replace with your image path
       />
     </Animated.View>
   );
 };
 
 const styles = StyleSheet.create({
-  dismissTypo: {
-    textAlign: "left",
-    fontFamily: FontFamily.buttonNormalMedium,
-    fontWeight: "500",
+  largeBoldText: {
+    fontWeight: "bold",
+    fontSize: 30, // Adjusted to make text larger
     color: Color.colorBlack,
-    fontSize: FontSize.size_5xl,
+    textAlign: "left",
     position: "absolute",
   },
   groupInnerLayout: {
@@ -112,11 +112,6 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     maxWidth: "100%",
     position: "absolute",
-  },
-  signUpTypo: {
-    textAlign: "center",
-    fontFamily: FontFamily.buttonNormalMedium,
-    fontWeight: "500",
   },
   buttonShadowBox: {
     paddingVertical: Padding.p_3xs,
@@ -153,9 +148,9 @@ const styles = StyleSheet.create({
   },
   routeDeviationDetected: {
     height: "15.01%",
-    width: "61.99%",
+    width: "80%", // Adjusted width for better layout
     top: "6.23%",
-    left: "38.01%",
+    left: "35%", // Centered more
   },
   groupItem: {
     height: "9.92%",
@@ -182,11 +177,12 @@ const styles = StyleSheet.create({
   },
   kmAwayFrom: {
     height: "8.78%",
-    width: "54.68%",
+    width: "80%", // Adjusted width for better layout
     top: "53.4%",
-    left: "21.35%",
+    left: "10%", // Centered more
     color: Color.colorBlack,
-    fontSize: FontSize.size_5xl,
+    fontWeight: "bold",
+    fontSize: 20, // Adjusted to make text larger
     textAlign: "center",
     position: "absolute",
   },
