@@ -87,7 +87,7 @@ const CreateCarpoolGroup = ({ navigation , route} ) => {
   };
 
   return (
-    <View style={tw`flex-1 p-5`}>
+    <View style={[tw`flex-1 p-5 bg-white`]}>
       <Text style={tw`text-2xl font-bold mb-4`}>Create a Carpool Group</Text>
       
       <TextInput
@@ -110,13 +110,13 @@ const CreateCarpoolGroup = ({ navigation , route} ) => {
         <Switch
           value={isPrivate}
           onValueChange={setIsPrivate}
-          trackColor={{ false: "#767577", true: "#81b0ff" }}
-          thumbColor={isPrivate ? "#f5dd4b" : "#f4f3f4"}
+          trackColor={{ false: "#003B36", true: "#009688" }}
+          thumbColor={isPrivate ? "#003B36" : "#009688"}
         />
       </View>
 
-      <Button title="Select Date" onPress={showDatepicker} />
-      <Button title="Select Time" onPress={showTimepicker} />
+      <Button title="Select Date" onPress={showDatepicker} color="#009688"/>
+      <Button title="Select Time" onPress={showTimepicker} color="#009688"/>
 
       {showDatePicker && (
         <DateTimePicker
@@ -142,7 +142,7 @@ const CreateCarpoolGroup = ({ navigation , route} ) => {
 
       <Text style={tw`mt-4`}>Scheduled Time: {scheduleDate.toLocaleString()}</Text>
 
-      <Button title={loading ? "Creating..." : "Create Group"} onPress={handleCreateGroup} disabled={loading} />
+      <Button title={loading ? "Creating..." : "Create Group"} onPress={handleCreateGroup} disabled={loading} color="#003B36"/>
     </View>
   );
 };

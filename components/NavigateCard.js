@@ -16,7 +16,7 @@ const NavigateCard = ({route}) => {
 
   return (
     <SafeAreaView style={tw`bg-white flex-1`}>
-      <Text style={tw`text-center py-5 text-xl`}>Good Morning, {username}!</Text>
+      <Text style={[tw`text-center py-5 text-xl font-semibold`,{ color:'#009688'}]}>Good Morning, {username}!</Text>
       <View style={tw`border-t border-gray-200 flex-shrink`}>
         <View>
             <GooglePlacesAutocomplete
@@ -52,7 +52,7 @@ const NavigateCard = ({route}) => {
       <View style={tw`flex-row bg-white justify-evenly py-2 mt-auto border-t border-gray-100`}>
         <TouchableOpacity 
         onPress={() => navigation.navigate('CreateCarpoolGroup', { username })}
-        style={tw`flex flex-row justify-between bg-black w-24 px-4 py-3 rounded-full`}>
+        style={[tw`flex flex-row justify-between w-24 px-4 py-3 rounded-full`,  { backgroundColor: '#003B36' }]}>
             <Icon name="car" type="font-awesome" color="white" size={16}/>
             <Text style={tw`text-white text-center`}>Create</Text>
         </TouchableOpacity>

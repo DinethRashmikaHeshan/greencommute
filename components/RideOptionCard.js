@@ -161,7 +161,10 @@ const RideOptionCard = ( {route} ) => {
         <TouchableOpacity
           disabled={!selected}
           onPress={handleChooseCarpool}
-          style={tw`bg-black py-3 m-3 ${!selected && 'bg-gray-300'}`}
+          style={[
+            tw`py-3 m-3`, 
+            { backgroundColor: selected ? '#003B36' : '#D3D3D3' } // Use your custom color
+          ]}
         >
           <Text style={tw`text-center text-white text-xl`}>
             Choose {selected?.title}

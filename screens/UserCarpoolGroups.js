@@ -100,15 +100,15 @@ const UserCarpoolGroups = () => {
   };
 
   return (
-    <View style={tw`flex-1 p-5 bg-gray-100`}>
+    <View style={tw`flex-1 p-5 `}>
       <Text style={tw`text-2xl font-bold mb-4 text-center`}>Your Carpools</Text>
 
       <FlatList
         data={carpools}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <View style={tw`bg-white p-4 rounded-lg mb-2 shadow-lg`}>
-            <Text style={tw`text-lg font-bold mb-1 text-blue-700`}>{item.group_name}</Text>
+          <View style={tw`bg-white p-4 rounded-lg mb-2`}>
+            <Text style={[tw`text-lg font-bold mb-1`,{ color: '#003B36' }]}>{item.group_name}</Text>
             <Text style={tw`text-gray-700`}>Available Seats: {item.seats}</Text>
             <Text style={tw`text-gray-700`}>Private Group: {item.is_private ? 'Yes' : 'No'}</Text>
             <Text style={tw`text-gray-700`}>Origin: {item.origin}</Text>
@@ -126,7 +126,7 @@ const UserCarpoolGroups = () => {
             />
 
             <View style={tw`flex-row justify-between mt-4`}>
-              <Button title="Update" onPress={() => openUpdateModal(item)} color="#4A90E2" />
+              <Button title="Update" onPress={() => openUpdateModal(item)} color="#009688" />
               <Button
                 title="Delete"
                 onPress={() => {

@@ -12,13 +12,13 @@ import { useNavigation } from '@react-navigation/native';
 const data = [
     {
         id: "123",
-        title: "Create CarPool",
+        title: "Share a Ride",
         image: require('../assets/create.png'),
         screen: "CreateCarPool"
     },
     {
         id: "456",
-        title: "Manage CarPool",
+        title: "My Commute",
         image: require('../assets/join.png'),
         screen: "UserCarpoolGroups"
     },
@@ -36,7 +36,7 @@ const NavOptions = ({username}) => {
         renderItem={({ item }) => (
             <TouchableOpacity 
             onPress={() => navigation.navigate(item.screen, { username })}
-            style={tw`p-2 pl-6 pb-8 pt-4 bg-gray-200 m-2 w-40`} 
+            style={[tw`p-2 pl-6 pb-8 pt-4 m-2 w-40`, { backgroundColor: '#F2FFFA' }]} 
             disabled={!origin}
             >
                 <View style={tw`${!origin && 'opacity-20'}`}>
