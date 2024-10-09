@@ -8,16 +8,17 @@ import NavigateCard from "../components/NavigateCard"
 import RideOptionCard from "../components/RideOptionCard"
 import CreateCarpoolGroup from "../components/CreateCarpoolGroup"
 import { Icon } from 'react-native-elements'
-import { useNavigation } from '@react-navigation/native'
+import { useNavigation, useRoute } from '@react-navigation/native'
 
 
 const CreateCarPool = () => {
 
   const Stack = createNativeStackNavigator()
   const navigation = useNavigation()
+  const route = useRoute(); // Use useRoute to access navigation params
+  const { username } = route.params;
   return (
     <View>
-
       <TouchableOpacity 
       onPress={() => navigation.navigate("HomeScreen")}
       style={tw`bg-gray-100 absolute top-16 left-8 z-50 p-3 rounded-full shadow-lg`}>
@@ -34,6 +35,7 @@ const CreateCarPool = () => {
           <Stack.Screen
             name='NavigateCard'
             component={NavigateCard}
+            initialParams={{ username }}
             options={{
               headerShown: false,
             }}

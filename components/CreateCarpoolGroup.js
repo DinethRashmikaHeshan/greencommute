@@ -6,7 +6,7 @@ import { supabase } from '../lib/supabase';
 import { selectOrigin, selectDestination } from '../slices/navSlice';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
-const CreateCarpoolGroup = ({ navigation }) => {
+const CreateCarpoolGroup = ({ navigation , route} ) => {
   const [groupName, setGroupName] = useState('');
   const [seats, setSeats] = useState('');
   const [isPrivate, setIsPrivate] = useState(false);
@@ -14,6 +14,8 @@ const CreateCarpoolGroup = ({ navigation }) => {
   const [scheduleDate, setScheduleDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
+  const { username } = route.params;
+
 
   // Select origin and destination from Redux store
   const origin = useSelector(selectOrigin);
@@ -39,6 +41,7 @@ const CreateCarpoolGroup = ({ navigation }) => {
         origin: origin.description,
         destination: destination.description,
         schedule_time: scheduleDate.toISOString(), // Save the scheduled time in ISO format
+        owner: username, // Save the username to the database
       }]);
 
     if (error) {

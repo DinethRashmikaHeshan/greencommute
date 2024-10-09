@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, Button, Alert } from 'react-native';
-import { supabase } from '../../lib/supabase'; // Adjust the import based on your project structure
+import { supabase } from '../../lib/supabase';
 import { useNavigation } from '@react-navigation/native';
 
 const SignUp = () => {

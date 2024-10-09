@@ -8,9 +8,9 @@ import { useDispatch } from 'react-redux';
 import { setOrigin, setDestination} from '../slices/navSlice'
 import NavFavourite from '../components/NavFavourite';
 
-const HomeScreen = () => {
+const HomeScreen = ({route}) => {
   const dispatch = useDispatch();
-
+  const { username } = route.params;
 
   return (
     <SafeAreaView style={tw`bg-white h-full`}>
@@ -60,7 +60,7 @@ const HomeScreen = () => {
         
         />
 
-        <NavOptions/>
+        <NavOptions username={username} />
         <NavFavourite/>
       </View>
     </SafeAreaView>

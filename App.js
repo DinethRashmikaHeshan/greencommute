@@ -25,10 +25,8 @@ import { KeyboardAvoidingView, Platform } from 'react-native';
 import { Provider } from 'react-redux';
 import HomeScreen from './screens/HomeScreen';
 import CreateCarPool from './screens/CreateCarPool';
+import UserCarpoolGroups from './screens/UserCarpoolGroups';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import 'react-native-gesture-handler'
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 export default function App() {
 
@@ -36,7 +34,7 @@ export default function App() {
 
   return (
     <Provider store={store}>
-        <NavigationContainer independent={true} initialRouteName="SignUp">
+        <NavigationContainer initialRouteName="SignUp">
             <SafeAreaProvider>
                 <KeyboardAvoidingView 
                     behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -45,18 +43,10 @@ export default function App() {
                 >
                 <Stack.Navigator>
 
-                    <Stack.Screen name="RouteSelection" component={RouteSelectionScreen} />
-                    <Stack.Screen name="Map" component={MapScreen} />
-                    <Stack.Screen name="Deviation" component={DeviationScreen} />
-
-                    {/*Rating*/}
-                    <Stack.Screen name="CRating" component={CreateReview} />
-                    <Stack.Screen name="Rating" component={Review} />
-                    <Stack.Screen name="Test" component={ConnectivityTest} />
-
-                    {/*signup and login*/}
-                    <Stack.Screen name="SignUp" component={SignUp} />
+                  {/*signup and login*/}
+                  <Stack.Screen name="SignUp" component={SignUp} />
                     <Stack.Screen name="Login" component={Login} />
+
                     <Stack.Screen 
                         name='HomeScreen' 
                         component={HomeScreen} 
@@ -71,6 +61,24 @@ export default function App() {
                             headerShown: false,
                         }} 
                     />
+                    <Stack.Screen 
+                        name='UserCarpoolGroups' 
+                        component={UserCarpoolGroups} 
+                        options={{
+                            headerShown: false,
+                        }} 
+                    />
+
+                    <Stack.Screen name="RouteSelection" component={RouteSelectionScreen} />
+                    <Stack.Screen name="Map" component={MapScreen} />
+                    <Stack.Screen name="Deviation" component={DeviationScreen} />
+
+                    {/*Rating*/}
+                    <Stack.Screen name="CRating" component={CreateReview} />
+                    <Stack.Screen name="Rating" component={Review} />
+                    <Stack.Screen name="Test" component={ConnectivityTest} />
+
+                    
                 </Stack.Navigator>
                 </KeyboardAvoidingView>
 

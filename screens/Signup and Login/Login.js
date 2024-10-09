@@ -46,7 +46,7 @@ const Login = () => {
     Alert.alert('Success', 'Logged in successfully!');
     setUsername(''); // Clear username field
     setPassword(''); // Clear password field
-    navigation.navigate('Rating', { username }); // Passing username as param
+    navigation.navigate('HomeScreen', { username }); // Passing username as param
     setLoading(false);
   };
 
