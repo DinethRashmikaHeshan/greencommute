@@ -47,7 +47,10 @@ const CalculateFootprint = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Calculate Your Carbon Footprint</Text>
+      <Text style={styles.mainHeading}>Calculate Your Eco Footprint</Text>
+      <Text style={styles.subHeading}>
+        Uncover Your Carbon Emissions and Make a Difference!
+      </Text>
 
       {/* Container for input fields and button */}
       <View style={styles.calculatorContainer}>
@@ -118,22 +121,23 @@ const CalculateFootprint = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#DFF5E1", // Light green background color
+    backgroundColor: "#DFF5E1", // Light green background
     padding: 20,
   },
-  title: {
-    fontSize: 28,
+  mainHeading: {
+    fontSize: 24,
     fontWeight: "700",
     textAlign: "center",
-    marginBottom: 20,
+    marginBottom: 10,
     color: "#2E7D32",
     textTransform: "uppercase",
-    fontFamily: "Arial",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    elevation: 3, // Add elevation for Android
+  },
+  subHeading: {
+    fontSize: 12,
+    fontWeight: "600",
+    textAlign: "center",
+    marginBottom: 20,
+    color: "#4A4A4A",
   },
   calculatorContainer: {
     backgroundColor: "#B2E5B0", // Light green background for the calculator section
@@ -167,8 +171,6 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     marginRight: 10,
-    fontFamily: "Arial",
-    fontWeight: "regular",
   },
   dropDownContainer: {
     backgroundColor: "#FFFFFF",

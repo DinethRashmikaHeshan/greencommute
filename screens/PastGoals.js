@@ -50,7 +50,9 @@ const PastGoals = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Past Goals</Text>
+      <Text style={styles.mainHeading}>Your Success Story</Text>
+      <Text style={styles.subHeading}>A Record of Past Goals</Text>
+
       {pastGoals.length === 0 ? (
         <Text style={styles.noGoalsText}>No past goals found.</Text>
       ) : (
@@ -106,15 +108,25 @@ const styles = StyleSheet.create({
     backgroundColor: "#DFF5E1",
     padding: 20,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
+  mainHeading: {
+    fontSize: 28, // Larger font size for main heading
+    fontWeight: "bold", // Bold for emphasis
+    textAlign: "center", // Centered alignment
+    marginBottom: 10, // Space below the heading
+    color: "#2E7D32", // Matching green color for consistency
+  },
+  subHeading: {
+    fontSize: 16, // Slightly smaller than the main heading
+    fontWeight: "600", // Semi-bold for distinction
+    textAlign: "center", // Centered alignment
+    color: "#555", // A contrasting color for the subheading
+    marginBottom: 20, // Space below the subheading
   },
   noGoalsText: {
     fontSize: 18,
     color: "#555",
     marginTop: 20,
+    textAlign: "center", // Center align the no goals message
   },
   table: {
     backgroundColor: "#FFFFFF",
@@ -125,6 +137,7 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 5,
     marginBottom: 20,
+    paddingBottom: 10, // Added padding for better appearance
   },
   tableHeader: {
     flexDirection: "row",
@@ -159,7 +172,7 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   backButton: {
-    backgroundColor: "#007BFF",
+    backgroundColor: "#4CAF50",
     padding: 15,
     borderRadius: 10,
     alignItems: "center",
@@ -168,6 +181,11 @@ const styles = StyleSheet.create({
   backButtonText: {
     color: "#FFFFFF",
     fontSize: 18,
+  },
+  errorText: {
+    color: "red",
+    textAlign: "center",
+    marginBottom: 10,
   },
 });
 
