@@ -8,7 +8,7 @@ import { selectTravelTimeInformation, selectOrigin, selectDestination } from '..
 import { supabase } from '../lib/supabase';
 import dayjs from 'dayjs';
 
-const RideOptionCard = () => {
+const RideOptionCard = ( {route} ) => {
   const navigation = useNavigation();
   const [selected, setSelected] = useState(null);
   const [carpoolGroups, setCarpoolGroups] = useState([]);
@@ -17,19 +17,17 @@ const RideOptionCard = () => {
   const travelTimeInformation = useSelector(selectTravelTimeInformation);
   const origin = useSelector(selectOrigin);
   const destination = useSelector(selectDestination);
+  const { username } = route.params;
 
   useEffect(() => {
     const fetchCarpoolGroups = async () => {
       try {
-        // Get current date and time
         const currentTime = dayjs().toISOString();
-
-        // Fetch carpool groups from Supabase where is_private is false
         const { data, error } = await supabase
           .from('CreateCarpool')
-          .select('group_name, seats, schedule_time, origin, destination') // Include origin and destination
-          .eq('is_private', false) // Filter to only non-private groups
-          .gt('seats', 0); // Filter to only groups with available seats
+          .select('id, group_name, seats, schedule_time, origin, destination')
+          .eq('is_private', false)
+          .gt('seats', 0);
 
         if (error) {
           setError(error.message);
@@ -37,22 +35,20 @@ const RideOptionCard = () => {
           return;
         }
 
-        // Filter the groups based on origin, destination, and schedule_time after current time
         const filteredGroups = data.filter(group => {
           return (
             dayjs(group.schedule_time).isAfter(currentTime) &&
-            group.origin === origin.description && // Check if origin matches
-            group.destination === destination.description // Check if destination matches
+            group.origin === origin.description &&
+            group.destination === destination.description
           );
         });
 
-        // Map the filtered data to match the format expected in the FlatList
         const formattedData = filteredGroups.map((group, index) => ({
-          id: `Carpool-${index}`,
+          id: group.id, // Use the actual group ID here for storing later
           title: group.group_name,
           availableSeats: group.seats,
           scheduleTime: group.schedule_time,
-          image: 'https://Links.papareact.com/7pf', // Placeholder image, replace as needed
+          image: 'https://Links.papareact.com/7pf',
         }));
 
         setCarpoolGroups(formattedData);
@@ -64,7 +60,44 @@ const RideOptionCard = () => {
     };
 
     fetchCarpoolGroups();
-  }, [origin, destination]); // Run this effect when origin or destination changes
+  }, [origin, destination]);
+
+  const handleChooseCarpool = async () => {
+    if (selected) {
+      try {
+        // Insert the current user as a member in the selected carpool group
+        const { error } = await supabase
+          .from('CarpoolMembers')
+          .insert([
+            {
+                carpool_id: selected.id,
+                member_username: username, // Assuming username is passed from route params
+            },
+          ]);
+
+           // Decrement the seats by 1 for the selected carpool group
+        const { error: updateError } = await supabase
+        .from('CreateCarpool')
+        .update({ seats: selected.availableSeats - 1 }) // Update the seats
+        .eq('id', selected.id); // Only update the specific carpool group
+
+        if (updateError) {
+        console.error("Error updating seats:", updateError.message);
+        return;
+        }
+
+        if (error) {
+          console.error("Error adding member:", error.message);
+        } else {
+          console.log("Member added successfully!");
+          // Optionally navigate to another screen or show success message
+          navigation.navigate('HomeScreen', { username }); // Replace with your desired screen
+        }
+      } catch (err) {
+        console.error("Error:", err.message);
+      }
+    }
+  };
 
   if (loading) {
     return (
@@ -127,6 +160,7 @@ const RideOptionCard = () => {
       <View>
         <TouchableOpacity
           disabled={!selected}
+          onPress={handleChooseCarpool}
           style={tw`bg-black py-3 m-3 ${!selected && 'bg-gray-300'}`}
         >
           <Text style={tw`text-center text-white text-xl`}>

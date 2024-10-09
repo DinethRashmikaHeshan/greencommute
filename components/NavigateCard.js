@@ -58,7 +58,7 @@ const NavigateCard = ({route}) => {
         </TouchableOpacity>
 
         <TouchableOpacity 
-        onPress={() => navigation.navigate('RideOptionCard')}
+        onPress={() => navigation.navigate('RideOptionCard', { username })}
         style={tw`flex flex-row justify-between w-24 px-4 py-3 rounded-full`}>
             <Icon name="car" type="ionicon" color="black" size={16}/>
             <Text style={tw`text-center`}>Join</Text>

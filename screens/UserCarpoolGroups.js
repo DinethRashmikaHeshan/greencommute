@@ -15,24 +15,39 @@ const UserCarpoolGroups = () => {
   const [isPrivate, setIsPrivate] = useState(false);
   const [origin, setOrigin] = useState('');
   const [destination, setDestination] = useState('');
-  const [scheduleTime, setScheduleTime] = useState('');
+  const [scheduleTime, setScheduleTime] = useState([]);
 
   useEffect(() => {
     fetchCarpools();
   }, []);
 
   const fetchCarpools = async () => {
-    const { data, error } = await supabase
+    const { data: carpoolsData, error: carpoolsError } = await supabase
       .from('CreateCarpool')
       .select('*')
       .eq('owner', username); // Fetch all fields for carpools
 
-    if (error) {
-      console.error('Error fetching carpools:', error);
+    if (carpoolsError) {
+      console.error('Error fetching carpools:', carpoolsError);
       return;
     }
 
-    setCarpools(data);
+    // Fetch members for each carpool concurrently
+    const carpoolsWithMembers = await Promise.all(carpoolsData.map(async (carpool) => {
+      const { data: membersData, error: membersError } = await supabase
+        .from('CarpoolMembers')
+        .select('member_username')
+        .eq('carpool_id', carpool.id);
+
+      if (membersError) {
+        console.error('Error fetching members:', membersError);
+        return { ...carpool, members: [] }; // Return carpool with empty members on error
+      }
+
+      return { ...carpool, members: membersData }; // Combine carpool data with members
+    }));
+
+    setCarpools(carpoolsWithMembers); // Update state with carpools and members
   };
 
   const handleUpdateCarpool = async () => {
@@ -99,6 +114,17 @@ const UserCarpoolGroups = () => {
             <Text style={tw`text-gray-700`}>Origin: {item.origin}</Text>
             <Text style={tw`text-gray-700`}>Destination: {item.destination}</Text>
             <Text style={tw`text-gray-700`}>Scheduled Time: {new Date(item.schedule_time).toLocaleString()}</Text>
+            
+            {/* Show Members of the Carpool */}
+            <Text style={tw`text-gray-700 font-semibold mt-2`}>Members:</Text>
+            <FlatList
+              data={item.members} // Use members directly from the carpool data
+              keyExtractor={(member) => member.member_username}
+              renderItem={({ item }) => (
+                <Text style={tw`text-gray-600 ml-4`}>{item.member_username}</Text>
+              )}
+            />
+
             <View style={tw`flex-row justify-between mt-4`}>
               <Button title="Update" onPress={() => openUpdateModal(item)} color="#4A90E2" />
               <Button
