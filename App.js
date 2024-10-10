@@ -16,6 +16,7 @@ import SignUp from './screens/Signup and Login/Signup';
 import Login from './screens/Signup and Login/Login';
 
 //expense calculator
+import ExpenseSharing from './screens/ExpenseSharing and Rating/ExpenseSharing';
 
 const Stack = createNativeStackNavigator();
 import 'react-native-get-random-values';
@@ -36,67 +37,62 @@ export default function App() {
 
   return (
     <Provider store={store}>
-        <NavigationContainer initialRouteName="SignUp">
-            <SafeAreaProvider>
-                <KeyboardAvoidingView 
-                    behavior={Platform.OS === "ios" ? "padding" : "height"}
-                    style={{ flex: 1}}
-                    keyboardVerticalOffset={Platform.OS === "ios" ? -64 : 0}
-                >
-                <Stack.Navigator>
+      <NavigationContainer initialRouteName="SignUp">
+        <SafeAreaProvider>
+          <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            style={{ flex: 1 }}
+            keyboardVerticalOffset={Platform.OS === "ios" ? -64 : 0}
+          >
+            <Stack.Navigator>
 
-                  {/*signup and login*/}
-                  <Stack.Screen name="SignUp" component={SignUp} />
-                    <Stack.Screen name="Login" component={Login} />
+              {/*signup and login*/}
+              <Stack.Screen name="SignUp" component={SignUp} />
+              <Stack.Screen name="Login" component={Login} />
 
-                    <Stack.Screen 
-                        name='HomeScreen' 
-                        component={HomeScreen} 
-                        options={{
-                            headerShown: false,
-                        }} 
-                    />
-                    <Stack.Screen 
-                        name='CreateCarPool' 
-                        component={CreateCarPool} 
-                        options={{
-                            headerShown: false,
-                        }} 
-                    />
-                    <Stack.Screen 
-                        name='UserCarpoolGroups' 
-                        component={UserCarpoolGroups} 
-                        options={{
-                            headerShown: false,
-                        }} 
-                    />
+              <Stack.Screen
+                name='HomeScreen'
+                component={HomeScreen}
+                options={{
+                  headerShown: false,
+                }}
+              />
+              <Stack.Screen
+                name='CreateCarPool'
+                component={CreateCarPool}
+                options={{
+                  headerShown: false,
+                }}
+              />
+              <Stack.Screen
+                name='UserCarpoolGroups'
+                component={UserCarpoolGroups}
+                options={{
+                  headerShown: false,
+                }}
+              />
 
-                    <Stack.Screen name="RouteSelection" component={RouteSelectionScreen} />
-                    <Stack.Screen name="Map" component={MapScreen} />
-                    <Stack.Screen name="Deviation" component={DeviationScreen} />
+              <Stack.Screen name="RouteSelection" component={RouteSelectionScreen} />
+              <Stack.Screen name="Map" component={MapScreen} />
+              <Stack.Screen name="Deviation" component={DeviationScreen} />
 
-                    {/*Rating*/}
-                    <Stack.Screen name="CRating" component={CreateReview} />
-                    <Stack.Screen name="Rating" component={Review} />
-                    <Stack.Screen name="Test" component={ConnectivityTest} />
+              {/*Rating*/}
+              <Stack.Screen name="CRating" component={CreateReview} />
+              <Stack.Screen name="Rating" component={Review} />
+              <Stack.Screen name="Test" component={ConnectivityTest} />
 
-        {/*signup and login*/}
-        <Stack.Screen name="SignUp" component={SignUp} />
-        <Stack.Screen name="Login" component={Login} />
 
-        {/* expense calculator */}
-        <Stack.Screen name="Login" component={Login} />
+              {/* expense calculator */}
+              <Stack.Screen name="Expense" component={ExpenseSharing} />
 
-        
 
-      </Stack.Navigator>
-    </NavigationContainer>
-                    
-                </Stack.Navigator>
-                </KeyboardAvoidingView>
 
-            </SafeAreaProvider>
-        </NavigationContainer>
-    </Provider>
+            </Stack.Navigator>
+
+          </KeyboardAvoidingView>
+
+        </SafeAreaProvider>
+      </NavigationContainer >
+    </Provider >
   );
 }

@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ImageBackground } from 'react-native';
-import { TextInput, Button, Snackbar } from 'react-native-paper';
+import { Snackbar } from 'react-native-paper';
 import { supabase } from '../../lib/supabase'; 
-import { View, Text, StyleSheet, TextInput, Button, Alert } from 'react-native';
-import { supabase } from '../../lib/supabase';
+import { View, Text, StyleSheet, TextInput, Alert, ImageBackground } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons'; // Import icons from Material Icons
+import { Button } from 'react-native-paper';
 
 const bgImage = require('../../assets/background-image.jpeg');
 
