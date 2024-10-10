@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Button, Alert, Modal, TextInput, ImageBackground } from 'react-native';
 import { supabase } from '../../lib/supabase';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
-import Icon from 'react-native-vector-icons/MaterialIcons'; // Import icons for better visuals
 
 const bgImage = require('../../assets/background-image.jpeg');
 
@@ -121,10 +120,12 @@ const Review = ({ route }) => {
               editable={false} // Make the input read-only
             />
             <TextInput
-              style={styles.input}
+              style={[styles.input, styles.textArea]} // Add custom styles for text area
               placeholder="Review Text"
               value={newReviewText}
               onChangeText={setNewReviewText}
+              multiline // Enable multi-line input
+              numberOfLines={4} // Default number of lines
             />
             <TextInput
               style={styles.input}
@@ -225,6 +226,9 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 10,
     marginBottom: 15,
+  },
+  textArea: {
+    height: 100, // Set height for the text area
   },
 });
 
