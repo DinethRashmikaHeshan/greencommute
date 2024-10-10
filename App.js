@@ -15,6 +15,8 @@ import ConnectivityTest from './screens/ExpenseSharing and Rating/ConnectivityTe
 import SignUp from './screens/Signup and Login/Signup';
 import Login from './screens/Signup and Login/Login';
 
+//expense calculator
+
 const Stack = createNativeStackNavigator();
 import 'react-native-get-random-values';
 import react from 'react';
@@ -78,6 +80,17 @@ export default function App() {
                     <Stack.Screen name="Rating" component={Review} />
                     <Stack.Screen name="Test" component={ConnectivityTest} />
 
+        {/*signup and login*/}
+        <Stack.Screen name="SignUp" component={SignUp} />
+        <Stack.Screen name="Login" component={Login} />
+
+        {/* expense calculator */}
+        <Stack.Screen name="Login" component={Login} />
+
+        
+
+      </Stack.Navigator>
+    </NavigationContainer>
                     
                 </Stack.Navigator>
                 </KeyboardAvoidingView>
