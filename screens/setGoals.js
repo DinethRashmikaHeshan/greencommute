@@ -90,30 +90,34 @@ const SetGoals = ({ route }) => {
       const carpoolIds = carpools.map((carpool) => carpool.carpool_id);
       const { data: carpoolDetails, error: carpoolDetailsError } =
         await supabase
-          .from("CarPool")
-          .select("distance_travelled, created_at")
+          .from("CreateCarpool")
+          .select("distance, created_at")
           .in("id", carpoolIds);
 
       if (carpoolDetailsError) throw carpoolDetailsError;
 
-      let totalDistance = 0;
+      let totalDistanceMiles = 0;
       const co2PerLiterGasoline = 2.31; // kg CO2 per liter
-      const averageFuelEfficiency = 12; // L/100 km
-      const distanceToCO2 = (distance) =>
-        (distance / 100) * averageFuelEfficiency * co2PerLiterGasoline;
+      const fuelConsumption = 12; // Average fuel consumption in liters per 100 km
+
+      const distanceToCO2 = (distanceInMiles) => {
+        const distanceInKilometers = distanceInMiles * 1.60934; // Convert miles to km
+        return (
+          (distanceInKilometers / 100) * fuelConsumption * co2PerLiterGasoline
+        );
+      };
 
       carpoolDetails.forEach((carpool) => {
-        // Check if the carpool's created date is after the goal's created date
         const carpoolCreatedDate = new Date(carpool.created_at);
         const goalCreatedDate = new Date(goal.created_at);
         if (carpoolCreatedDate >= goalCreatedDate) {
-          totalDistance += carpool.distance_travelled;
-          console.log(`Added distance: ${carpool.distance_travelled} km`);
+          totalDistanceMiles += carpool.distance; // Distance is in miles
+          console.log(`Added distance: ${carpool.distance} miles`);
         }
       });
 
-      const totalCO2 = distanceToCO2(totalDistance);
-      console.log(`Total Distance: ${totalDistance} km`);
+      const totalCO2 = distanceToCO2(totalDistanceMiles);
+      console.log(`Total Distance: ${totalDistanceMiles} miles`);
       console.log(`Total CO2 Emissions: ${totalCO2} kg`);
 
       // Calculate progress
@@ -122,6 +126,13 @@ const SetGoals = ({ route }) => {
         const progressPercentage = (totalCO2 / targetCO2Value) * 100;
         setProgress(progressPercentage);
         console.log(`Progress: ${progressPercentage.toFixed(2)}%`);
+
+        // If progress reaches or exceeds 100%, mark the goal as completed
+        if (progressPercentage >= 100) {
+          await markGoalAsCompleted(goal.id);
+          setActiveGoal(null); // Clear the active goal and show the option to create a new one
+          Alert.alert("Congratulations!", "You have completed your goal.");
+        }
       }
     } catch (error) {
       console.error("Error calculating progress:", error.message);
@@ -542,6 +553,7 @@ const styles = StyleSheet.create({
   noGoalText: {
     fontSize: 18,
     color: "#555",
+    textAlign: "center",
     marginBottom: 20,
   },
   congratulationsText: {
@@ -554,6 +566,7 @@ const styles = StyleSheet.create({
   cancelButton: {
     backgroundColor: "#B0BEC5", // Gray color for cancel button
     padding: 10,
+    alignItems: "center",
     borderRadius: 10,
     marginTop: 10,
   },
