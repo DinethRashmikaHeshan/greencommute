@@ -27,6 +27,8 @@ const MapScreen = ({ route }) => {
   const [endingTime, setEndingTime] = useState('');
   const [routeCoordinates, setRouteCoordinates] = useState([]); // New state to store route coordinates
   const navigation = useNavigation();
+  const [message,setMessage] = useState('');
+  const [number,setNumber] = useState('');
   const { start, end, userId, carpoolId } = route.params;
 
   useEffect(() => {
@@ -81,7 +83,18 @@ const MapScreen = ({ route }) => {
           setEndingTime(endTime(estimatedTime));
 
           if (distance > 200) {
-            navigation.navigate('Deviation');
+            const message = `I am currently here: https://maps.google.com/?q=${location.coords.latitude},${location.coords.longitude}`;
+            setMessage(message);
+            const phoneNumber = '+94'+userDetails.phone_number;
+            setNumber(phoneNumber);
+            navigation.navigate('Deviation',
+              {
+                distance:distance,
+                message:message,
+                number:number
+
+              }
+            );
           }
         }
       );
@@ -190,7 +203,9 @@ const MapScreen = ({ route }) => {
 
   const shareLiveLocation = () => {
     const message = `I am currently here: https://maps.google.com/?q=${location.coords.latitude},${location.coords.longitude}`;
+    setMessage(message);
     const phoneNumber = '+94'+userDetails.phone_number;
+    setNumber(userDetails.phone_number);
     Linking.openURL(`whatsapp://send?phone=${phoneNumber}&text=${message}`);
   };
 

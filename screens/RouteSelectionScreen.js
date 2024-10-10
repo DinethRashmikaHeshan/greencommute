@@ -29,17 +29,20 @@ const RouteSelectionScreen = () => {
     }
   };
 
+  const userld = "5f43b03e-1728-4c83-a105-9daad55b3c8b";
   const handleNavigate = () => {
     if (start && end && userId && carpoolId) {
+      setUserId(userld);
       navigation.navigate('Map', { start, end , userId, carpoolId });
     } else {
       Alert.alert('Error', 'Please select both start and end points, and enter User ID and Carpool ID.');
     }
   };
 
-  const userld = "5f43b03e-1728-4c83-a105-9daad55b3c8b";
+  
   const handleMNavigate = () => {
-    navigation.navigate('Contact', { userId });
+    setUserId(userld);
+    navigation.navigate('Contact', {userId});
   };
 
   const handleLocationSelect = (data, details, setLocation) => {

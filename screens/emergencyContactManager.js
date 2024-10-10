@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
 import { View, Text, TextInput, Button, FlatList, Alert, TouchableOpacity, StyleSheet, SafeAreaView, Modal } from 'react-native';
 import {
   fetchEmergencyContacts,
@@ -8,7 +9,7 @@ import {
   changeActiveContact,
 } from './emergencyContactservice';
 
-const EmergencyContactManager = ({ usersId }) => {
+const EmergencyContactManager = ( {route} ) => {
   const [contacts, setContacts] = useState([]);
   const [newContact, setNewContact] = useState('');
   const [activeContact, setActiveContact] = useState(null);
@@ -16,11 +17,13 @@ const EmergencyContactManager = ({ usersId }) => {
   const [selectedContactId, setSelectedContactId] = useState(null);
   const [updatedPhoneNumber, setUpdatedPhoneNumber] = useState('');
   const [isAddMode, setIsAddMode] = useState(true); // Track if modal is for adding or updating
+  const {userId} = route.params;
   
-  const userId = "5f43b03e-1728-4c83-a105-9daad55b3c8b";
+  // const userId = "5f43b03e-1728-4c83-a105-9daad55b3c8b";
   
   useEffect(() => {
     loadContacts();
+    console.log(userId);
   }, []);
 
   const loadContacts = async () => {

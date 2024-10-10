@@ -7,11 +7,14 @@ import {
   TouchableOpacity,
   PanResponder,
   Animated,
+  Linking,
+  Alert,
 } from "react-native";
 import { FontFamily, Color, FontSize, Padding, Border } from "./globalstyles";
 
-const Group = ({ navigation }) => {
+const Group = ({ navigation,route }) => {
   const translateX = useRef(new Animated.Value(0)).current;
+  const {distance,message,number} = route.params;
 
   const panResponder = useRef(
     PanResponder.create({
@@ -43,11 +46,16 @@ const Group = ({ navigation }) => {
 
   const handleCallSOS = () => {
     // Add functionality to call SOS
+    Alert.alert('Emergency', 'Are you sure you want to call the police?', [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Call', onPress: () => Linking.openURL('tel:119') },
+    ]);
     console.log("Calling SOS...");
   };
 
   const handleShareLocation = () => {
     // Add functionality to share live location
+    Linking.openURL(`whatsapp://send?phone=${number}&text=${message}`);
     console.log("Sharing location...");
   };
 
@@ -69,7 +77,7 @@ const Group = ({ navigation }) => {
       />
       <Text style={[styles.dismiss, styles.largeBoldText]}>Dismiss</Text>
       <Text style={[styles.kmAwayFrom]}>
-        1KM away from your route.
+        {distance}m away from your route.
       </Text>
       <TouchableOpacity
         style={[styles.button, styles.buttonShadowBox]}
