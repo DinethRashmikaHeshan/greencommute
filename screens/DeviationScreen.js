@@ -1,4 +1,4 @@
-import {useRef}  from "react";
+import {useRef, useState}  from "react";
 import {
   StyleSheet,
   View,
@@ -11,10 +11,14 @@ import {
   Alert,
 } from "react-native";
 import { FontFamily, Color, FontSize, Padding, Border } from "./globalstyles";
+import { supabase } from '../lib/supabase';
 
 const Group = ({ navigation,route }) => {
   const translateX = useRef(new Animated.Value(0)).current;
-  const {distance,message,number} = route.params;
+  const {distance,userId} = route.params;
+  const [number,setNumber] = useState('');
+
+  console.log(route);
 
   const panResponder = useRef(
     PanResponder.create({
@@ -44,6 +48,17 @@ const Group = ({ navigation,route }) => {
     })
   ).current;
 
+  const fetchUserDetails = async () => {
+    const { data, error } = await supabase.from('emergency_contacts').select('*').eq('user_id', userId).eq('is_active', true);
+    console.log(true);
+    if (error) {
+      console.error(error);
+    } else {
+      console.log(data[0]);
+      setNumber(data[0].phone_number)
+    }
+  };
+
   const handleCallSOS = () => {
     // Add functionality to call SOS
     Alert.alert('Emergency', 'Are you sure you want to call the police?', [
@@ -55,7 +70,12 @@ const Group = ({ navigation,route }) => {
 
   const handleShareLocation = () => {
     // Add functionality to share live location
-    Linking.openURL(`whatsapp://send?phone=${number}&text=${message}`);
+    fetchUserDetails();
+    console.log(number);
+    Alert.alert('Emergency', 'Are you sure you want to call the Emergency Contact?', [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Call', onPress: () => Linking.openURL(`tel:${number}`) },
+    ]);
     console.log("Sharing location...");
   };
 
