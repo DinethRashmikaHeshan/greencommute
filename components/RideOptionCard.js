@@ -91,7 +91,23 @@ const RideOptionCard = ( {route} ) => {
         } else {
           console.log("Member added successfully!");
           // Optionally navigate to another screen or show success message
-          navigation.navigate('HomeScreen', { username }); // Replace with your desired screen
+          const s = origin.location;
+          const e = destination.location;
+
+          // Transform lat/lng to latitude/longitude
+          const start = {
+            latitude: s.lat,
+            longitude: s.lng,
+          };
+
+          const end = {
+            latitude: e.lat,
+            longitude: e.lng,
+          };
+          console.log(start,end);
+          const userId = username;
+          const carpoolId = '3';
+          navigation.navigate('Map', { start,end,userId,carpoolId }); // Replace with your desired screen
         }
       } catch (err) {
         console.error("Error:", err.message);

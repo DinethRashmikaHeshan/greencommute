@@ -11,6 +11,7 @@ import NavFavourite from '../components/NavFavourite';
 const HomeScreen = ({route}) => {
   const dispatch = useDispatch();
   const { username } = route.params;
+  console.log(username);
 
   return (
     <SafeAreaView style={tw`bg-white h-full`}>

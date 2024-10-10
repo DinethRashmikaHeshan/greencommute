@@ -198,9 +198,7 @@ const MapScreen = ({ route }) => {
 
   const shareLiveLocation = () => {
     const message = `I am currently here: https://maps.google.com/?q=${location.coords.latitude},${location.coords.longitude}`;
-    setMessage(message);
     const phoneNumber = '+94'+userDetails.phone_number;
-    setNumber(userDetails.phone_number);
     Linking.openURL(`whatsapp://send?phone=${phoneNumber}&text=${message}`);
   };
   
@@ -251,10 +249,15 @@ const MapScreen = ({ route }) => {
       >
         {location && (
           <Marker
-            coordinate={{ latitude: location.coords.latitude, longitude: location.coords.longitude }}
-            title="Current Location"
-            pinColor="blue"
+          coordinate={{ latitude: location.coords.latitude, longitude: location.coords.longitude }}
+          title="Current Location"
+        >
+          <Image 
+            source={require("../assets/dir.png")} 
+            style={{ width: 40, height: 40 }} // Adjust the size as needed
+            resizeMode="contain"
           />
+        </Marker>
         )}
         <Marker coordinate={start} title="Start" />
         <Marker coordinate={end} title="End" />
@@ -262,7 +265,6 @@ const MapScreen = ({ route }) => {
       </MapView>
 
       <TouchableOpacity style={styles.emergencyButton} onPress={confirmEmergencyCall}>
-        {/* <Text style={styles.emergencyButtonText}>SOS</Text> */}
         <Image style={styles.imageSirenIcon} resizeMode="cover" source={require("../assets/siren-light.png")}/>
       </TouchableOpacity>
 
@@ -434,7 +436,7 @@ const styles = StyleSheet.create({
       shadowRadius: 14,
       elevation: 14,
       borderRadius: 50,
-      backgroundColor: Color.primaryRed,
+      backgroundColor: '#003B36',
       justifyContent: "center",
       paddingHorizontal: 15,
       paddingVertical: Padding.p_3xs,
