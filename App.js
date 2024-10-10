@@ -29,7 +29,8 @@ import UserCarpoolGroups from './screens/UserCarpoolGroups';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import DashboardScreen from './screens/DashboardScreen';
 import JoinedCarpoolGroups from './screens/JoinedCarpoolGroups'; 
-import UserVehicles from './screens/UserVehicles'; // Import the new component
+import UserVehicles from './screens/UserVehicles'; 
+
 
 
 

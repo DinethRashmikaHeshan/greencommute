@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Button, FlatList, Alert, TextInput, Modal, StyleSheet, Switch } from 'react-native';
+import { View, Text, Button, FlatList, Alert, TextInput, Modal, StyleSheet, Switch, Linking } from 'react-native';
 import { supabase } from '../lib/supabase';
 import tw from 'tailwind-react-native-classnames';
 import { useRoute } from '@react-navigation/native';
@@ -85,6 +85,15 @@ const UserCarpoolGroups = () => {
     setModalVisible(true);
   };
 
+  // Invite via SMS
+  const inviteViaSMS = (carpool) => {
+    const message = `Join our carpool group "${carpool.group_name}" from ${carpool.origin} to ${carpool.destination} at ${new Date(carpool.schedule_time).toLocaleString()}.\nYour password to join is: ${carpool.id}`;
+    const phoneNumber = ''; // You can prompt user to enter phone number or leave it blank for now
+
+    const smsUrl = `sms:${phoneNumber}?body=${encodeURIComponent(message)}`;
+    Linking.openURL(smsUrl).catch((err) => console.error('Error sending SMS:', err));
+  };
+
   // Filter carpools into private and public groups
   const privateCarpools = carpools.filter(carpool => carpool.is_private);
   const publicCarpools = carpools.filter(carpool => !carpool.is_private);
@@ -100,7 +109,7 @@ const UserCarpoolGroups = () => {
 
       <View style={tw`flex-row mt-4`}>
         <View style={tw`flex-1 mr-2`}>
-          <Button title="Edit Carpool" onPress={() => openUpdateModal(item)} color="#009688" />
+          <Button title="Edit" onPress={() => openUpdateModal(item)} color="#009688" />
         </View>
         <View style={tw`flex-1 mr-2`}>
           <Button
@@ -118,6 +127,11 @@ const UserCarpoolGroups = () => {
             color="#FF3B30"
           />
         </View>
+        {item.is_private && (
+          <View style={tw`flex-1 ml-2`}>
+            <Button title="Invite" onPress={() => inviteViaSMS(item)} color="#003B36" />
+          </View>
+        )}
       </View>
     </View>
   );
@@ -196,7 +210,7 @@ const UserCarpoolGroups = () => {
                 <Button title="Update Carpool" onPress={handleUpdateCarpool} color="#009688" />
               </View>
               <View style={tw`flex-1 ml-2`}>
-                <Button title="Cancel" onPress={() => setModalVisible(false)} color="#003B36" />
+                <Button title="Cancel" onPress={() => setModalVisible(false)} color="#FF3B30" />
               </View>
             </View>
           </View>
@@ -214,15 +228,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalView: {
-    width: '90%',
     backgroundColor: 'white',
     borderRadius: 10,
     padding: 20,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
-    elevation: 10,
+    width: '80%',
   },
 });
 
