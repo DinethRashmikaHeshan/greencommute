@@ -196,7 +196,7 @@ const UserCarpoolGroups = () => {
                 <Button title="Update Carpool" onPress={handleUpdateCarpool} color="#009688" />
               </View>
               <View style={tw`flex-1 ml-2`}>
-                <Button title="Cancel" onPress={() => setModalVisible(false)} color="#FF3B30" />
+                <Button title="Cancel" onPress={() => setModalVisible(false)} color="#003B36" />
               </View>
             </View>
           </View>

@@ -10,7 +10,7 @@ const UserVehicles = () => {
   const [vehicles, setVehicles] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [editMode, setEditMode] = useState(false);
-  const [selectedVehicle, setSelectedVehicle] = useState(null); // Store selected vehicle for update
+  const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [vehicleNumber, setVehicleNumber] = useState('');
   const [vehicleType, setVehicleType] = useState('');
   const [fuelConsumption, setFuelConsumption] = useState('');
@@ -37,14 +37,12 @@ const UserVehicles = () => {
   };
 
   const handleAddOrUpdateVehicle = async () => {
-    // Validate input
     if (!vehicleNumber || !vehicleType || !fuelConsumption) {
       Alert.alert('Error', 'All fields are required.');
       return;
     }
 
     if (editMode && selectedVehicle) {
-      // Update vehicle
       const { error } = await supabase
         .from('Vehicles')
         .update({ vehicle_number: vehicleNumber, vehicle_type: vehicleType, fuel_consumption: fuelConsumption })
@@ -58,7 +56,6 @@ const UserVehicles = () => {
 
       Alert.alert('Success', 'Vehicle updated successfully!');
     } else {
-      // Add vehicle
       const { error } = await supabase
         .from('Vehicles')
         .insert([{ vehicle_number: vehicleNumber, vehicle_type: vehicleType, owner_name: username, fuel_consumption: fuelConsumption }]);
@@ -74,11 +71,10 @@ const UserVehicles = () => {
 
     clearInputs();
     setModalVisible(false);
-    fetchVehicles(); // Refresh the list of vehicles
+    fetchVehicles();
   };
 
   const handleDeleteVehicle = async (id) => {
-    // First check if the vehicle is referenced in CreateCarpool
     const { data, error } = await supabase
       .from('CreateCarpool')
       .select('*')
@@ -101,7 +97,7 @@ const UserVehicles = () => {
     }
 
     Alert.alert('Success', 'Vehicle deleted successfully!');
-    fetchVehicles(); // Refresh the list of vehicles
+    fetchVehicles();
   };
 
   const clearInputs = () => {
@@ -123,33 +119,36 @@ const UserVehicles = () => {
   };
 
   return (
-    <View style={tw`flex-1 p-5 bg-gray-50`}>
-      <Text style={tw`text-3xl font-bold mb-4 text-center text-blue-600`}>Your Vehicles</Text>
+    <View style={tw`flex-1 p-5 bg-white`}>
+      <Text style={[tw`text-3xl font-bold mb-4 text-center`, { color: '#003B36' }]}>Your Vehicles</Text>
 
       <Button title="Add a New Vehicle" onPress={() => {
         clearInputs();
         setModalVisible(true);
-      }} color="#4CAF50" />
+      }} color="#2C6E49" />
 
       <FlatList
         data={vehicles}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <View style={styles.vehicleCard}>
-            <Text style={tw`text-lg font-bold mb-1`}>Vehicle Number: {item.vehicle_number}</Text>
+            <Text style={[tw`text-lg font-bold mb-1`, { color: '#003B36' }]}>Vehicle Number: {item.vehicle_number}</Text>
             <Text style={tw`text-gray-700`}>Vehicle Type: {item.vehicle_type}</Text>
             <Text style={tw`text-gray-700`}>Owner: {item.owner_name}</Text>
             <Text style={tw`text-gray-700`}>Fuel Consumption: {item.fuel_consumption} L/100km</Text>
-            <View style={tw`flex-row justify-between mt-2`}>
-              <Button title="Edit" onPress={() => handleEditVehicle(item)} />
-              <Button title="Delete" onPress={() => handleDeleteVehicle(item.id)} color="red" />
+            <View style={tw`flex-row  mt-2`}>
+            <View style={tw`flex-1 mr-2`}>
+              <Button title="Edit" onPress={() => handleEditVehicle(item)} color="#009688"/>
+                </View>
+                <View style={tw`flex-1 mr-2`}>
+              <Button title="Delete" onPress={() => handleDeleteVehicle(item.id)} color="#FF3B30" />
+                </View>
             </View>
           </View>
         )}
-        contentContainerStyle={{ paddingBottom: 20 }} // Add bottom padding
+        contentContainerStyle={{ paddingBottom: 20 }}
       />
 
-      {/* Add/Edit Vehicle Modal */}
       <Modal
         animationType="slide"
         transparent={true}
@@ -161,7 +160,7 @@ const UserVehicles = () => {
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalView}>
-            <Text style={tw`text-lg font-bold mb-2 text-center`}>{editMode ? 'Edit Vehicle' : 'Add a New Vehicle'}</Text>
+            <Text style={[tw`text-lg font-bold mb-2 text-center`, { color: '#003B36' }]}>{editMode ? 'Edit Vehicle' : 'Add a New Vehicle'}</Text>
             <TextInput
               placeholder="Vehicle Number"
               value={vehicleNumber}
@@ -199,11 +198,17 @@ const UserVehicles = () => {
               style={styles.input}
               keyboardType="numeric"
             />
-            <Button title={editMode ? "Update Vehicle" : "Add Vehicle"} onPress={handleAddOrUpdateVehicle} color="#2196F3" />
+            <View style={tw`flex-row mt-4`}>
+            <View style={tw`flex-1 mr-2`}>
+            <Button title={editMode ? "Update Vehicle" : "Add Vehicle"} onPress={handleAddOrUpdateVehicle} color="#009688" />
+            </View>
+            <View style={tw`flex-1 mr-2`}>
             <Button title="Cancel" onPress={() => {
               setModalVisible(false);
               clearInputs();
-            }} color="#FF3B30" />
+            }} color="#003B36" />
+            </View>
+            </View>
           </View>
         </View>
       </Modal>
@@ -213,14 +218,14 @@ const UserVehicles = () => {
 
 const styles = StyleSheet.create({
   vehicleCard: {
-    backgroundColor: '#fff',
+    backgroundColor: '#E8F6EF',
     borderRadius: 10,
     padding: 15,
     marginVertical: 10,
-    elevation: 3,
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 4,
+    elevation: 3,
   },
   modalContainer: {
     flex: 1,
@@ -235,10 +240,7 @@ const styles = StyleSheet.create({
     padding: 20,
     alignItems: 'center',
     shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
