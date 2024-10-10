@@ -27,6 +27,12 @@ import HomeScreen from './screens/HomeScreen';
 import CreateCarPool from './screens/CreateCarPool';
 import UserCarpoolGroups from './screens/UserCarpoolGroups';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import DashboardScreen from './screens/DashboardScreen';
+import JoinedCarpoolGroups from './screens/JoinedCarpoolGroups'; 
+import UserVehicles from './screens/UserVehicles'; // Import the new component
+
+
+
 
 export default function App() {
 
@@ -62,8 +68,27 @@ export default function App() {
                         }} 
                     />
                     <Stack.Screen 
+                                name='Dashboard' 
+                                component={DashboardScreen} 
+                                options={{
+                                    headerShown: false,
+                                }} 
+                            />
+                    <Stack.Screen 
                         name='UserCarpoolGroups' 
                         component={UserCarpoolGroups} 
+                        options={{
+                            headerShown: false,
+                        }} 
+                    />
+                    <Stack.Screen 
+                        name='JoinedCarpoolGroups'  // Add this line
+                        component={JoinedCarpoolGroups} 
+                        options={{ headerShown: false }} 
+                    />
+                    <Stack.Screen 
+                        name='UserVehicles' 
+                        component={UserVehicles} 
                         options={{
                             headerShown: false,
                         }} 

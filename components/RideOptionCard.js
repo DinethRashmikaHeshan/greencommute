@@ -8,7 +8,13 @@ import { selectTravelTimeInformation, selectOrigin, selectDestination } from '..
 import { supabase } from '../lib/supabase';
 import dayjs from 'dayjs';
 
-const RideOptionCard = ( {route} ) => {
+const vehicleImages = {
+  'Mini - Car': 'https://Links.papareact.com/3pn',
+  'Car': 'https://Links.papareact.com/7pf',
+  'Van': 'https://Links.papareact.com/5w8',
+};
+
+const RideOptionCard = ({ route }) => {
   const navigation = useNavigation();
   const [selected, setSelected] = useState(null);
   const [carpoolGroups, setCarpoolGroups] = useState([]);
@@ -25,7 +31,7 @@ const RideOptionCard = ( {route} ) => {
         const currentTime = dayjs().toISOString();
         const { data, error } = await supabase
           .from('CreateCarpool')
-          .select('id, group_name, seats, schedule_time, origin, destination')
+          .select('id, group_name, seats, schedule_time, origin, destination, vehicle_id')
           .eq('is_private', false)
           .gt('seats', 0);
 
@@ -43,12 +49,27 @@ const RideOptionCard = ( {route} ) => {
           );
         });
 
-        const formattedData = filteredGroups.map((group, index) => ({
-          id: group.id, // Use the actual group ID here for storing later
-          title: group.group_name,
-          availableSeats: group.seats,
-          scheduleTime: group.schedule_time,
-          image: 'https://Links.papareact.com/7pf',
+        // Fetch vehicle details for each group
+        const formattedData = await Promise.all(filteredGroups.map(async (group) => {
+          const { data: vehicleData, error: vehicleError } = await supabase
+            .from('Vehicles')
+            .select('vehicle_number, vehicle_type')
+            .eq('id', group.vehicle_id)
+            .single(); // Fetch the vehicle details for the carpool group
+
+          if (vehicleError) {
+            console.error("Error fetching vehicle data:", vehicleError.message);
+          }
+
+          return {
+            id: group.id,
+            title: group.group_name,
+            availableSeats: group.seats,
+            scheduleTime: group.schedule_time,
+            vehicleNumber: vehicleData?.vehicle_number || 'Unknown Vehicle',
+            vehicleType: vehicleData?.vehicle_type || 'Unknown Type',
+            image: vehicleImages[vehicleData?.vehicle_type] || 'https://Links.papareact.com/default', // Use the mapping
+          };
         }));
 
         setCarpoolGroups(formattedData);
@@ -65,33 +86,42 @@ const RideOptionCard = ( {route} ) => {
   const handleChooseCarpool = async () => {
     if (selected) {
       try {
-        // Insert the current user as a member in the selected carpool group
+        // Check if the user is already a member of the selected carpool group
+        const { data: existingMembers, error: fetchError } = await supabase
+          .from('CarpoolMembers')
+          .select('*')
+          .eq('carpool_id', selected.id)
+          .eq('member_username', username);
+  
+        if (fetchError) {
+          console.error("Error fetching existing members:", fetchError.message);
+          return;
+        }
+  
+        if (existingMembers.length > 0) {
+          console.log("User is already a member of this carpool.");
+          return;
+        }
+  
         const { error } = await supabase
           .from('CarpoolMembers')
-          .insert([
-            {
-                carpool_id: selected.id,
-                member_username: username, // Assuming username is passed from route params
-            },
-          ]);
+          .insert([{ carpool_id: selected.id, member_username: username }]);
 
-           // Decrement the seats by 1 for the selected carpool group
         const { error: updateError } = await supabase
-        .from('CreateCarpool')
-        .update({ seats: selected.availableSeats - 1 }) // Update the seats
-        .eq('id', selected.id); // Only update the specific carpool group
-
+          .from('CreateCarpool')
+          .update({ seats: selected.availableSeats - 1 })
+          .eq('id', selected.id);
+  
         if (updateError) {
-        console.error("Error updating seats:", updateError.message);
-        return;
+          console.error("Error updating seats:", updateError.message);
+          return;
         }
-
+  
         if (error) {
           console.error("Error adding member:", error.message);
         } else {
           console.log("Member added successfully!");
-          // Optionally navigate to another screen or show success message
-          navigation.navigate('HomeScreen', { username }); // Replace with your desired screen
+          navigation.navigate('HomeScreen', { username });
         }
       } catch (err) {
         console.error("Error:", err.message);
@@ -135,21 +165,21 @@ const RideOptionCard = ( {route} ) => {
         renderItem={({ item }) => (
           <TouchableOpacity
             onPress={() => setSelected(item)}
-            style={tw`flex-row justify-between items-center px-10 ${item.id === selected?.id && 'bg-gray-200'}`}
+            style={tw`flex-row justify-between items-center px-10 py-1 ${item.id === selected?.id && 'bg-gray-200'}`}
           >
             <Image
               style={{
-                width: 100,
-                height: 100,
+                width: 85,
+                height: 85,
                 resizeMode: 'contain',
               }}
               source={{ uri: item.image }}
             />
-
             <View style={tw`-ml-6`}>
-              <Text style={tw`text-xl font-semibold`}>{item.title}</Text>
-              <Text>{travelTimeInformation?.duration.text} Travel Time</Text>
+              <Text style={[tw`text-xl font-semibold`, { color: '#003B36' }]}>{item.title}</Text>
+              <Text>{travelTimeInformation?.duration.text}</Text>
               <Text>Available Seats: {item.availableSeats}</Text>
+              <Text>Vehicle: {item.vehicleNumber}</Text>
               <Text style={tw`font-semibold`}>{dayjs(item.scheduleTime).format('MMMM D h:mm A')}</Text>
             </View>
             <Text style={tw`text-xl`}>Rs.100/=</Text>
@@ -162,8 +192,8 @@ const RideOptionCard = ( {route} ) => {
           disabled={!selected}
           onPress={handleChooseCarpool}
           style={[
-            tw`py-3 m-3`, 
-            { backgroundColor: selected ? '#003B36' : '#D3D3D3' } // Use your custom color
+            tw`py-3 m-3`,
+            { backgroundColor: selected ? '#003B36' : '#D3D3D3' }
           ]}
         >
           <Text style={tw`text-center text-white text-xl`}>

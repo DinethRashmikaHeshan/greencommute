@@ -20,7 +20,7 @@ const data = [
         id: "456",
         title: "My Commute",
         image: require('../assets/join.png'),
-        screen: "UserCarpoolGroups"
+        screen: "Dashboard"
     },
 ];
 
@@ -36,7 +36,7 @@ const NavOptions = ({username}) => {
         renderItem={({ item }) => (
             <TouchableOpacity 
             onPress={() => navigation.navigate(item.screen, { username })}
-            style={[tw`p-2 pl-6 pb-8 pt-4 m-2 w-40`, { backgroundColor: '#F2FFFA' }]} 
+            style={[tw`p-2 pl-6 pb-8 pt-4 m-2 w-40`, { backgroundColor: '#E2FFF3' }]} 
             disabled={!origin}
             >
                 <View style={tw`${!origin && 'opacity-20'}`}>

@@ -13,10 +13,12 @@ const NavigateCard = ({route}) => {
     const dispatch = useDispatch()
     const navigation = useNavigation()
     const { username } = route.params;
+    const capitalizedUsername = username.charAt(0).toUpperCase() + username.slice(1).toLowerCase();
+
 
   return (
     <SafeAreaView style={tw`bg-white flex-1`}>
-      <Text style={[tw`text-center py-5 text-xl font-semibold`,{ color:'#009688'}]}>Good Morning, {username}!</Text>
+      <Text style={[tw`text-center py-5 text-xl font-semibold`,{ color:'#009688'}]}>Good Morning, {capitalizedUsername}!</Text>
       <View style={tw`border-t border-gray-200 flex-shrink`}>
         <View>
             <GooglePlacesAutocomplete
