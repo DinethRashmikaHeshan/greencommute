@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
     textAlign: "center", // Center align the no goals message
   },
   table: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#DFF5E1",
     borderRadius: 10,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },

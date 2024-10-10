@@ -12,7 +12,7 @@ import { supabase } from "../lib/supabase";
 import { BarChart } from "react-native-chart-kit"; // Ensure this library is installed
 
 const ViewSavings = ({ route }) => {
-  const { uid } = route.params; // Get uid from route params
+  const { uid, username } = route.params; // Get uid from route params
   const [savingsData, setSavingsData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -24,9 +24,9 @@ const ViewSavings = ({ route }) => {
     const fetchSavingsData = async () => {
       try {
         const { data, error } = await supabase
-          .from("user_carpool")
+          .from("CarpoolMembers")
           .select("carpool_id")
-          .eq("user_id", uid);
+          .eq("member_username", username);
 
         if (error) throw error;
 
@@ -229,10 +229,13 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   title: {
-    fontSize: 28, // Bigger font size for main heading
-    fontWeight: "bold", // Bold font weight
-    textAlign: "center", // Center align
-    color: "#2E7D32", // Matching green color
+    fontSize: 28,
+    fontWeight: "bold",
+    textAlign: "center",
+    color: "#2E7D32",
+    textShadowColor: "#A8DAB5", // Light shadow color for a soft effect
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 5,
   },
   subtitle: {
     fontSize: 12,

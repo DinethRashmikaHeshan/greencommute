@@ -5,6 +5,7 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  ScrollView,
   ActivityIndicator,
   Alert,
 } from "react-native";
@@ -76,9 +77,9 @@ const SetGoals = ({ route }) => {
   const calculateProgress = async (goal) => {
     try {
       const { data: carpools, error: carpoolsError } = await supabase
-        .from("user_carpool")
+        .from("CarpoolMembers")
         .select("carpool_id")
-        .eq("user_id", uid);
+        .eq("member_username", username);
 
       if (carpoolsError) throw carpoolsError;
 
@@ -268,181 +269,192 @@ const SetGoals = ({ route }) => {
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.headerContainer}>
-        <Text style={styles.mainHeading}>
-          Make a Difference: Set Your Goals!
-        </Text>
-        <Text style={styles.subHeading}>
-          Join the movement towards a sustainable future by tracking your carbon
-          reduction efforts.
-        </Text>
-      </View>
+    <ScrollView style={styles.scroll}>
+      <View style={styles.container}>
+        <View style={styles.headerContainer}>
+          <Text style={styles.mainHeading}>
+            Make a Difference: Set Your Goals!
+          </Text>
+          <Text style={styles.subHeading}>
+            Join the movement towards a sustainable future by tracking your
+            carbon reduction efforts.
+          </Text>
+        </View>
 
-      {activeGoal ? (
-        <View>
-          {isEditing ? (
-            <>
-              <TextInput
-                style={styles.input}
-                placeholder="Enter Goal Name"
-                value={goalName}
-                onChangeText={setGoalName}
-              />
-              <TextInput
-                style={styles.input}
-                placeholder="Enter Target CO2 Reduction (kg)"
-                keyboardType="numeric"
-                value={targetCO2}
-                onChangeText={setTargetCO2}
-              />
-              <TouchableOpacity
-                onPress={() => setShowDatePicker(true)}
-                style={styles.input}
-              >
-                <Text style={styles.dateText}>
-                  Completion Date: {completionDate.toLocaleDateString()}
-                </Text>
-              </TouchableOpacity>
-              {showDatePicker && (
-                <DateTimePicker
-                  value={completionDate}
-                  mode="date"
-                  display="default"
-                  onChange={onChangeDate}
+        {activeGoal ? (
+          <View>
+            {isEditing ? (
+              <>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Enter Goal Name"
+                  value={goalName}
+                  onChangeText={setGoalName}
                 />
-              )}
-              <TouchableOpacity
-                style={styles.newGoalButton}
-                onPress={handleUpdateGoal}
-              >
-                <Text style={styles.buttonText}>Update Goal</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.cancelButton}
-                onPress={() => setIsEditing(false)}
-              >
-                <Text style={styles.buttonText}>Cancel</Text>
-              </TouchableOpacity>
-            </>
-          ) : (
-            <>
-              <View style={styles.goalContainer}>
-                <Text style={styles.goalTitle}>{activeGoal.goal_name}</Text>
-                <Text style={styles.goalText}>
-                  Target CO2: {activeGoal.target_co2} kg
-                </Text>
-                <Text style={styles.goalText}>
-                  Completion Date:{" "}
-                  {new Date(activeGoal.completion_date).toLocaleDateString()}
-                </Text>
-                <Text style={styles.goalText}>Status: {activeGoal.status}</Text>
-
-                {/* Buttons for Edit and Delete */}
-                <View style={styles.buttonRow}>
-                  <TouchableOpacity
-                    style={styles.editButton}
-                    onPress={() => setIsEditing(true)}
-                  >
-                    <Text style={styles.buttonText}>Edit</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={styles.deleteButton}
-                    onPress={handleDeleteGoal}
-                  >
-                    <Text style={styles.buttonText}>Delete</Text>
-                  </TouchableOpacity>
-                </View>
-
-                {/* Progress Bar */}
-                <View style={styles.progressContainer}>
-                  <Text style={styles.progressText}>
-                    Progress: {progress.toFixed(2)}%
+                <TextInput
+                  style={styles.input}
+                  placeholder="Enter Target CO2 Reduction (kg)"
+                  keyboardType="numeric"
+                  value={targetCO2}
+                  onChangeText={setTargetCO2}
+                />
+                <TouchableOpacity
+                  onPress={() => setShowDatePicker(true)}
+                  style={styles.input}
+                >
+                  <Text style={styles.dateText}>
+                    Completion Date: {completionDate.toLocaleDateString()}
                   </Text>
-                  <View style={styles.progressBar}>
-                    <View
-                      style={{
-                        ...styles.progressFill,
-                        width: `${progress}%`,
-                      }}
-                    />
+                </TouchableOpacity>
+                {showDatePicker && (
+                  <DateTimePicker
+                    value={completionDate}
+                    mode="date"
+                    display="default"
+                    onChange={onChangeDate}
+                  />
+                )}
+                <TouchableOpacity
+                  style={styles.newGoalButton}
+                  onPress={handleUpdateGoal}
+                >
+                  <Text style={styles.buttonText}>Update Goal</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.cancelButton}
+                  onPress={() => setIsEditing(false)}
+                >
+                  <Text style={styles.buttonText}>Cancel</Text>
+                </TouchableOpacity>
+              </>
+            ) : (
+              <>
+                <View style={styles.goalContainer}>
+                  <Text style={styles.goalTitle}>{activeGoal.goal_name}</Text>
+                  <Text style={styles.goalText}>
+                    Target CO2: {activeGoal.target_co2} kg
+                  </Text>
+                  <Text style={styles.goalText}>
+                    Completion Date:{" "}
+                    {new Date(activeGoal.completion_date).toLocaleDateString()}
+                  </Text>
+                  <Text style={styles.goalText}>
+                    Status: {activeGoal.status}
+                  </Text>
+
+                  {/* Buttons for Edit and Delete */}
+                  <View style={styles.buttonRow}>
+                    <TouchableOpacity
+                      style={styles.editButton}
+                      onPress={() => setIsEditing(true)}
+                    >
+                      <Text style={styles.buttonText}>Edit</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={styles.deleteButton}
+                      onPress={handleDeleteGoal}
+                    >
+                      <Text style={styles.buttonText}>Delete</Text>
+                    </TouchableOpacity>
+                  </View>
+
+                  {/* Progress Bar */}
+                  <View style={styles.progressContainer}>
+                    <Text style={styles.progressText}>
+                      Progress: {progress.toFixed(2)}%
+                    </Text>
+                    <View style={styles.progressBar}>
+                      <View
+                        style={{
+                          ...styles.progressFill,
+                          width: `${progress}%`,
+                        }}
+                      />
+                    </View>
                   </View>
                 </View>
-              </View>
-            </>
-          )}
-        </View>
-      ) : (
-        <View>
-          <Text style={styles.noGoalText}>No active goal found.</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Enter Goal Name"
-            value={goalName}
-            onChangeText={setGoalName}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Enter Target CO2 Reduction (kg)"
-            keyboardType="numeric"
-            value={targetCO2}
-            onChangeText={setTargetCO2}
-          />
-          <TouchableOpacity
-            onPress={() => setShowDatePicker(true)}
-            style={styles.input}
-          >
-            <Text style={styles.dateText}>
-              Completion Date: {completionDate.toLocaleDateString()}
-            </Text>
-          </TouchableOpacity>
-          {showDatePicker && (
-            <DateTimePicker
-              value={completionDate}
-              mode="date"
-              display="default"
-              onChange={onChangeDate}
+              </>
+            )}
+          </View>
+        ) : (
+          <View>
+            <Text style={styles.noGoalText}>No active goal found.</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter Goal Name"
+              value={goalName}
+              onChangeText={setGoalName}
             />
-          )}
-          <TouchableOpacity
-            style={styles.newGoalButton}
-            onPress={handleSetNewGoal}
-          >
-            <Text style={styles.buttonText}>Set New Goal</Text>
-          </TouchableOpacity>
-        </View>
-      )}
+            <TextInput
+              style={styles.input}
+              placeholder="Enter Target CO2 Reduction (kg)"
+              keyboardType="numeric"
+              value={targetCO2}
+              onChangeText={setTargetCO2}
+            />
+            <TouchableOpacity
+              onPress={() => setShowDatePicker(true)}
+              style={styles.input}
+            >
+              <Text style={styles.dateText}>
+                Completion Date: {completionDate.toLocaleDateString()}
+              </Text>
+            </TouchableOpacity>
+            {showDatePicker && (
+              <DateTimePicker
+                value={completionDate}
+                mode="date"
+                display="default"
+                onChange={onChangeDate}
+              />
+            )}
+            <TouchableOpacity
+              style={styles.newGoalButton}
+              onPress={handleSetNewGoal}
+            >
+              <Text style={styles.buttonText}>Set New Goal</Text>
+            </TouchableOpacity>
+          </View>
+        )}
 
-      {/* Congratulations message */}
-      {completedGoals > 0 && (
-        <Text style={styles.congratulationsText}>
-          🎉 Hooray! 🎉{"\n"}You’ve successfully completed {completedGoals}{" "}
-          {completedGoals === 1 ? "goal" : "goals"}!
-        </Text>
-      )}
+        {/* Congratulations message */}
+        {completedGoals > 0 && (
+          <Text style={styles.congratulationsText}>
+            🎉 Hooray! 🎉{"\n"}You’ve successfully completed {completedGoals}{" "}
+            {completedGoals === 1 ? "goal" : "goals"}!
+          </Text>
+        )}
 
-      {/* Button to view past goals */}
-      <TouchableOpacity
-        style={styles.pastGoalsButton}
-        onPress={handleViewPastGoals}
-      >
-        <Text style={styles.buttonText}>See Past Goals</Text>
-      </TouchableOpacity>
-    </View>
+        {/* Button to view past goals */}
+        <TouchableOpacity
+          style={styles.pastGoalsButton}
+          onPress={handleViewPastGoals}
+        >
+          <Text style={styles.buttonText}>See Past Goals</Text>
+        </TouchableOpacity>
+      </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
+  scroll: {
+    backgroundColor: "#DFF5E1",
+  },
   headerContainer: {
     marginBottom: 20,
     alignItems: "center", // Center align the header elements
   },
   mainHeading: {
-    fontSize: 24, // Bigger font size for main heading
-    fontWeight: "bold", // Bold font weight
-    textAlign: "center", // Center align
-    color: "#2E7D32", // Matching green color
+    fontSize: 24,
+    fontWeight: "bold",
+    textAlign: "center",
+    color: "#2E7D32",
+    textShadowColor: "#A8DAB5", // Light shadow color for a soft effect
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 5,
   },
+
   subHeading: {
     fontSize: 12,
     fontWeight: "600", // Semi bold font weight
@@ -539,7 +551,7 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 10,
     alignItems: "center",
-    marginTop: 10,
+    marginTop: 30,
   },
   buttonText: {
     fontSize: 18,
@@ -561,7 +573,7 @@ const styles = StyleSheet.create({
     color: "#2E7D32",
     fontWeight: "bold",
     textAlign: "center",
-    marginVertical: 10,
+    marginVertical: 20,
   },
   cancelButton: {
     backgroundColor: "#B0BEC5", // Gray color for cancel button

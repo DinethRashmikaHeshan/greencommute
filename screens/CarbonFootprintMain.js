@@ -71,15 +71,23 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: "bold",
     textAlign: "center",
     marginBottom: 10,
+    marginTop: 10,
+    color: "#2E7D32",
+    textShadowColor: "#A8DAB5", // Light shadow color for a soft effect
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 5,
   },
   subtitle: {
     fontSize: 16,
     textAlign: "center",
-    marginBottom: 20,
+    marginBottom: 40,
+    fontWeight: "600", // Semi bold font weight
+    color: "#555", // A slightly darker color for contrast
+    marginTop: 5, // Add some space between title and subheading
   },
   card: {
     flexDirection: "row", // Align items in a row

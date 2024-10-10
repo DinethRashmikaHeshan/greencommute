@@ -5,6 +5,7 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  ScrollView,
 } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
 import TipsComponent from "./TipsComponent"; // Import the TipsComponent
@@ -46,79 +47,84 @@ const CalculateFootprint = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.mainHeading}>Calculate Your Eco Footprint</Text>
-      <Text style={styles.subHeading}>
-        Uncover Your Carbon Emissions and Make a Difference!
-      </Text>
+    <ScrollView style={styles.scroll}>
+      <View style={styles.container}>
+        <Text style={styles.mainHeading}>Calculate Your Eco Footprint</Text>
+        <Text style={styles.subHeading}>
+          Uncover Your Carbon Emissions and Make a Difference!
+        </Text>
 
-      {/* Container for input fields and button */}
-      <View style={styles.calculatorContainer}>
-        <View style={styles.row}>
-          <Text style={styles.label}>Fuel Consumption:</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="liters per 100km"
-            keyboardType="numeric"
-            value={fuelConsumption}
-            onChangeText={(text) => setFuelConsumption(text)}
-          />
-        </View>
-
-        <View style={[styles.row, { zIndex: 1000 }]}>
-          <Text style={styles.label}>Fuel Type:</Text>
-          <DropDownPicker
-            open={open}
-            value={fuelType}
-            items={items}
-            setOpen={setOpen}
-            setValue={setFuelType}
-            setItems={setItems}
-            containerStyle={{ height: open ? 50 : 50, flex: 1 }}
-            dropDownContainerStyle={[
-              styles.dropDownContainer,
-              { zIndex: 1000 },
-            ]}
-            placeholder="Select fuel type"
-            placeholderStyle={styles.placeholderStyle}
-            searchable={false}
-            style={styles.input}
-          />
-        </View>
-
-        <View style={[styles.row, { zIndex: 500 }]}>
-          <Text style={styles.label}>Distance Traveled:</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="km"
-            keyboardType="numeric"
-            value={distance}
-            onChangeText={(text) => setDistance(text)}
-          />
-        </View>
-
-        <TouchableOpacity style={styles.button} onPress={calculateFootprint}>
-          <Text style={styles.buttonText}>🧮 Calculate</Text>
-        </TouchableOpacity>
-      </View>
-
-      {result && (
-        <View>
-          <View style={styles.resultContainer}>
-            <Text style={styles.resultText}>
-              Estimated CO2 Emissions: {result} kg
-            </Text>
+        {/* Container for input fields and button */}
+        <View style={styles.calculatorContainer}>
+          <View style={styles.row}>
+            <Text style={styles.label}>Fuel Consumption:</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="liters per 100km"
+              keyboardType="numeric"
+              value={fuelConsumption}
+              onChangeText={(text) => setFuelConsumption(text)}
+            />
           </View>
 
-          {/* Render TipsComponent and pass the result as a prop */}
-          <TipsComponent result={result} />
+          <View style={[styles.row, { zIndex: 1000 }]}>
+            <Text style={styles.label}>Fuel Type:</Text>
+            <DropDownPicker
+              open={open}
+              value={fuelType}
+              items={items}
+              setOpen={setOpen}
+              setValue={setFuelType}
+              setItems={setItems}
+              containerStyle={{ height: open ? 50 : 50, flex: 1 }}
+              dropDownContainerStyle={[
+                styles.dropDownContainer,
+                { zIndex: 1000 },
+              ]}
+              placeholder="Select fuel type"
+              placeholderStyle={styles.placeholderStyle}
+              searchable={false}
+              style={styles.input}
+            />
+          </View>
+
+          <View style={[styles.row, { zIndex: 500 }]}>
+            <Text style={styles.label}>Distance Traveled:</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="km"
+              keyboardType="numeric"
+              value={distance}
+              onChangeText={(text) => setDistance(text)}
+            />
+          </View>
+
+          <TouchableOpacity style={styles.button} onPress={calculateFootprint}>
+            <Text style={styles.buttonText}>🧮 Calculate</Text>
+          </TouchableOpacity>
         </View>
-      )}
-    </View>
+
+        {result && (
+          <View>
+            <View style={styles.resultContainer}>
+              <Text style={styles.resultText}>
+                Estimated CO2 Emissions: {result} kg
+              </Text>
+            </View>
+
+            {/* Render TipsComponent and pass the result as a prop */}
+            <TipsComponent result={result} />
+          </View>
+        )}
+      </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
+  scroll: {
+    backgroundColor: "#DFF5E1",
+  },
   container: {
     flex: 1,
     backgroundColor: "#DFF5E1", // Light green background
@@ -127,10 +133,14 @@ const styles = StyleSheet.create({
   mainHeading: {
     fontSize: 24,
     fontWeight: "700",
-    textAlign: "center",
     marginBottom: 10,
-    color: "#2E7D32",
     textTransform: "uppercase",
+    fontWeight: "bold",
+    textAlign: "center",
+    color: "#2E7D32",
+    textShadowColor: "#A8DAB5", // Light shadow color for a soft effect
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 5,
   },
   subHeading: {
     fontSize: 12,
