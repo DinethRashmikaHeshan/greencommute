@@ -3,15 +3,38 @@ import { View, Text, FlatList, Button, Alert } from 'react-native';
 import { supabase } from '../lib/supabase';
 import tw from 'tailwind-react-native-classnames';
 import { useRoute } from '@react-navigation/native';
+import axios from 'axios';
+import { useNavigation } from '@react-navigation/native';
+
+const GOOGLE_GEOCODING_API_KEY = 'AIzaSyAlr9ejliXP037xHQtnJ2zscbPGxczkUrM';
 
 const JoinedCarpoolGroups = () => {
+  const navigation = useNavigation();
   const route = useRoute();
   const { username } = route.params; // Assuming you are passing the username as a parameter
   const [joinedCarpools, setJoinedCarpools] = useState([]);
+  const [starts, setStarts] = useState(null);
+  const [ends, setEnds] = useState(null);
 
   useEffect(() => {
     fetchJoinedCarpools();
   }, []);
+
+  const getCoordinates = async (address) => {
+    try {
+      const response = await axios.get(
+        `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${GOOGLE_GEOCODING_API_KEY}`
+      );
+      const location = response.data.results[0].geometry.location;
+      return {
+        latitude: location.lat,
+        longitude: location.lng
+      };
+    } catch (error) {
+      console.error('Error fetching location coordinates:', error);
+      return null;
+    }
+  };
 
   const fetchJoinedCarpools = async () => {
     const { data, error } = await supabase
@@ -74,8 +97,33 @@ const JoinedCarpoolGroups = () => {
     Alert.alert('Success', 'You have left the carpool group successfully!');
   };
 
-  const handleJoinRide = (carpoolId) => {
+  const handleJoinRide =  async (carpoolId,s,e) => {
     Alert.alert('Ride Started', 'You have joined the ride successfully!');
+    const [startCoords, endCoords] = await Promise.all([
+      getCoordinates(s),
+      getCoordinates(e)
+    ]);
+    const userId = username;
+    console.log(s,e)
+    if (startCoords && endCoords) {
+      setStarts(startCoords);
+      setEnds(endCoords);
+    } else {
+      Alert.alert('Error', 'Unable to fetch coordinates for the provided locations.');
+    }
+    console.log(starts,ends)
+    const start = {
+      latitude: starts.latitude,
+      longitude: starts.longitude,
+    };
+
+    const end = {
+      latitude: ends.latitude,
+      longitude: ends.longitude,
+    };
+    console.log(start,end)
+    navigation.navigate('Map', { start,end,userId,carpoolId });
+
     // Add any additional logic if needed for joining the ride
   };
 
@@ -99,7 +147,7 @@ const JoinedCarpoolGroups = () => {
             {item.CreateCarpool.isStart && (
               <Button
                 title="Join Ride"
-                onPress={() => handleJoinRide(item.carpool_id)}
+                onPress={() => handleJoinRide(item.carpool_id,item.CreateCarpool.origin,item.CreateCarpool.destination)}
                 color="#28a745" // Green color for the "Join Ride" button
               />
             )}

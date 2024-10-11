@@ -4,9 +4,14 @@ import { supabase } from '../lib/supabase';
 import { Button, Icon } from 'react-native-elements';
 import tw from 'tailwind-react-native-classnames';
 import { useRoute } from '@react-navigation/native';
+import axios from 'axios';
+import { useNavigation } from '@react-navigation/native';
+
+const GOOGLE_GEOCODING_API_KEY = 'AIzaSyAlr9ejliXP037xHQtnJ2zscbPGxczkUrM';
 
 const UserCarpoolGroups = () => {
   const route = useRoute();
+  const navigation = useNavigation();
   const { username } = route.params;
   const [carpools, setCarpools] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
@@ -17,10 +22,28 @@ const UserCarpoolGroups = () => {
   const [origin, setOrigin] = useState('');
   const [destination, setDestination] = useState('');
   const [scheduleTime, setScheduleTime] = useState('');
+  const [starts, setStarts] = useState(null);
+  const [ends, setEnds] = useState(null);
 
   useEffect(() => {
     fetchCarpools();
   }, []);
+
+  const getCoordinates = async (address) => {
+    try {
+      const response = await axios.get(
+        `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${GOOGLE_GEOCODING_API_KEY}`
+      );
+      const location = response.data.results[0].geometry.location;
+      return {
+        latitude: location.lat,
+        longitude: location.lng
+      };
+    } catch (error) {
+      console.error('Error fetching location coordinates:', error);
+      return null;
+    }
+  };
 
   const fetchCarpools = async () => {
     const { data: carpoolsData, error: carpoolsError } = await supabase
@@ -107,6 +130,35 @@ const UserCarpoolGroups = () => {
 
     fetchCarpools();
     Alert.alert('Success', `Trip ${newIsStart ? 'started' : 'ended'} successfully!`);
+    if(newIsStart){
+      const [startCoords, endCoords] = await Promise.all([
+        getCoordinates(carpool.origin),
+        getCoordinates(carpool.destination)
+      ]);
+      const userId = username;
+      const carpoolId = carpool.id;
+      console.log(carpool.origin,carpool.destination)
+      console.log(startCoords,endCoords)
+      if (startCoords && endCoords) {
+        setStarts(startCoords);
+        setEnds(endCoords);
+      } else {
+        Alert.alert('Error', 'Unable to fetch coordinates for the provided locations.');
+      }
+      const start = {
+        latitude: startCoords.latitude,
+        longitude: startCoords.longitude,
+      };
+
+      const end = {
+        latitude: endCoords.latitude,
+        longitude: endCoords.longitude,
+      };
+      console.log(start,end)
+      navigation.navigate('Map', { start,end,userId,carpoolId });
+    }else{
+      navigation.navigate('HomeScreen',{username});
+    }
   };
 
   const renderCarpool = ({ item }) => {

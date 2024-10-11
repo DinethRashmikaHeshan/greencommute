@@ -138,7 +138,7 @@ const RideOptionCard = ({ route }) => {
           console.log(start,end);
           const userId = username;
           const carpoolId = '3';
-          // rr // Replace with your desired screen
+          // navigation.navigate('Map', { start,end,userId,carpoolId }); // Replace with your desired screen
           navigation.navigate('HomeScreen', { username });
         }
       } catch (err) {

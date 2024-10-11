@@ -16,8 +16,8 @@ const GOOGLE_MAPS_API_KEY = 'AIzaSyAlr9ejliXP037xHQtnJ2zscbPGxczkUrM'; // Replac
 const MapScreen = ({ route }) => {
   const [location, setLocation] = useState(null);
   const [carpoolDetails, setCarpoolDetails] = useState({
-    VehicleNo: '',
-    VehicleOwnerName: '',
+    vehicle_number: '',
+    owner_name: '',
   });
   const [userDetails, setUserDetails] = useState({
     phone_number: '',
@@ -34,12 +34,14 @@ const MapScreen = ({ route }) => {
     let subscription;
 
     const fetchCarpoolDetails = async () => {
-      const { data, error } = await supabase.from('CarPool').select('*').eq('id', carpoolId);
+      const { data, error } = await supabase.from('CreateCarpool')
+      .select('vehicle_id, Vehicles(*)')  // Use foreign key to include related vehicle data
+      .eq('id', carpoolId);
       if (error) {
         console.error(error);
       } else {
-        console.log(data[0]);
-        setCarpoolDetails(data[0]);
+        console.log(data[0].Vehicles);
+        setCarpoolDetails(data[0].Vehicles);
       }
     };
 
@@ -82,7 +84,7 @@ const MapScreen = ({ route }) => {
           setEndingTime(endTime(estimatedTime));
           
 
-          if (distance > 200) {
+          if (distance > 2000000000000000) {
             navigation.navigate('Deviation',
               {
                 distance:distance,
@@ -224,8 +226,8 @@ const MapScreen = ({ route }) => {
           <View style={styles.imageCircleParent}>
           <Image style={styles.imageCircleIcon} resizeMode="cover" source={require("../assets/car.png")}/>
           <View style={styles.caa5366Parent}>
-          <Text style={[styles.caa5366, styles.signUpTypo]}>{carpoolDetails.VehicleNo}</Text>
-          <Text style={[styles.nadunSilva, styles.caa5366Position]}>{carpoolDetails.VehicleOwnerName}</Text>
+          <Text style={[styles.caa5366, styles.signUpTypo]}>{carpoolDetails.vehicle_number}</Text>
+          <Text style={[styles.nadunSilva, styles.caa5366Position]}>{carpoolDetails.owner_name}</Text>
           </View>
           </View>
           </View>
