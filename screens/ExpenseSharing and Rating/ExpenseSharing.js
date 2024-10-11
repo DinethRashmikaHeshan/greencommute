@@ -28,7 +28,7 @@ const ExpenseSharing = ({ route }) => {  // Receive route via props
 
   useEffect(() => {
     if (routeDistance) {
-      setDistance((routeDistance / 1000).toFixed(2)); // Convert meters to kilometers with 2 decimal places
+      setDistance((routeDistance * 1.60934).toFixed(2)); // Convert meters to kilometers with 2 decimal places
     }
     console.log(distance);
   }, [routeDistance]);

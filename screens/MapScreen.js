@@ -28,20 +28,22 @@ const MapScreen = ({ route }) => {
   const [routeCoordinates, setRouteCoordinates] = useState([]); // New state to store route coordinates
   const navigation = useNavigation();
   const { start, end, userId, carpoolId } = route.params;
-  
+  const [routeDistance, setRouteDistance] = useState(0);
 
   useEffect(() => {
     let subscription;
 
     const fetchCarpoolDetails = async () => {
       const { data, error } = await supabase.from('CreateCarpool')
-      .select('vehicle_id, Vehicles(*)')  // Use foreign key to include related vehicle data
+      .select('vehicle_id, Vehicles(*),distance')  // Use foreign key to include related vehicle data
       .eq('id', carpoolId);
       if (error) {
         console.error(error);
       } else {
         console.log(data[0].Vehicles);
+        console.log(data[0]);
         setCarpoolDetails(data[0].Vehicles);
+        setRouteDistance(data[0].distance)
       }
     };
 
@@ -205,7 +207,8 @@ const MapScreen = ({ route }) => {
   };
 
   const endRide = () => {
-    navigation.navigate('Contact',{userId:userId})
+    const username = userId;
+    navigation.navigate('Expense',{username,routeDistance,carpoolId})
   };
   
   const confirmEmergencyCall = () => {
