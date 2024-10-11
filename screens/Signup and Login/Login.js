@@ -53,7 +53,7 @@ const Login = () => {
     // If login is successful, clear input fields and navigate to the Rating screen
     setUsername('');
     setPassword('');
-    navigation.navigate('HomeScreen', { username }); 
+    navigation.navigate('Expense', { username}); 
     setSnackbarMessage('Logged in successfully!');
     setSnackbarVisible(true);
     setLoading(false);

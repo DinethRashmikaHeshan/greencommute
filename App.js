@@ -50,6 +50,9 @@ export default function App() {
               <Stack.Screen name="SignUp" component={SignUp} />
               <Stack.Screen name="Login" component={Login} />
 
+              {/* expense calculator */}
+              <Stack.Screen name="Expense" component={ExpenseSharing} />
+
               <Stack.Screen
                 name='HomeScreen'
                 component={HomeScreen}
@@ -82,8 +85,7 @@ export default function App() {
               <Stack.Screen name="Test" component={ConnectivityTest} />
 
 
-              {/* expense calculator */}
-              <Stack.Screen name="Expense" component={ExpenseSharing} />
+              
 
 
 

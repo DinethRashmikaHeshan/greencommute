@@ -1,5 +1,4 @@
-// CreateReview.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert, TouchableOpacity } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
 import { Rating } from 'react-native-ratings';
@@ -9,16 +8,37 @@ const CreateReview = ({ route }) => {
   const [carpoolName, setCarpoolName] = useState('');
   const [reviewText, setReviewText] = useState('');
   const [rating, setRating] = useState(0);
+  const [carpoolOptions, setCarpoolOptions] = useState([]);
 
-  const { username } = route.params
+  const { username } = route.params;
+  const userID = username;
 
-  // Dummy data for carpool names
-  const carpoolOptions = [
-    { label: 'Carpool A', value: 'Carpool A' },
-    { label: 'Carpool B', value: 'Carpool B' },
-    { label: 'Carpool C', value: 'Carpool C' },
-  ];
-  const userID = username
+  // Fetch carpool names from the CreateCarpool table
+  useEffect(() => {
+    const fetchCarpoolOptions = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('CreateCarpool')
+          .select('group_name');
+
+        if (error) {
+          throw error;
+        }
+
+        const formattedOptions = data.map((carpool) => ({
+          label: carpool.group_name,
+          value: carpool.group_name,
+        }));
+
+        setCarpoolOptions(formattedOptions);
+      } catch (error) {
+        console.error('Error fetching carpool options:', error);
+        Alert.alert('Error', 'There was a problem fetching carpool options.');
+      }
+    };
+
+    fetchCarpoolOptions();
+  }, []);
 
   // Handle form submission
   const handleSubmit = async () => {
