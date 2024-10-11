@@ -3,7 +3,10 @@ import React, { useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Modal, TextInput, Alert, Button, Image } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import tw from 'tailwind-react-native-classnames';
-import { supabase } from '../lib/supabase'; // Import Supabase instance
+import { supabase } from '../lib/supabase';
+import BottomTabNavigator from '../components/BottomTabNavigator';
+import Animated, { Easing } from 'react-native-reanimated'; // Importing reanimated
+import * as Animatable from 'react-native-animatable'; // Importing animatable
 
 const DashboardScreen = () => {
     const navigation = useNavigation();
@@ -12,7 +15,7 @@ const DashboardScreen = () => {
 
     const [modalVisible, setModalVisible] = useState(false);
     const [password, setPassword] = useState('');
-    const [carpoolDetails, setCarpoolDetails] = useState(null); // State to store carpool details
+    const [carpoolDetails, setCarpoolDetails] = useState(null);
 
     const handleJoinPrivateCarpool = async () => {
         if (!password) {
@@ -20,38 +23,33 @@ const DashboardScreen = () => {
             return;
         }
 
-        // Fetch carpool group by ID (password)
         const { data: carpool, error } = await supabase
             .from('CreateCarpool')
             .select('*')
-            .eq('id', password) // Check if the entered password matches a carpool group ID
-            .eq('is_private', true) // Ensure it's a private group
+            .eq('id', password)
+            .eq('is_private', true);
 
         if (error || carpool.length === 0) {
             Alert.alert('Error', 'Invalid password or no private carpool found.');
             return;
         }
 
-        // If a valid private carpool group is found, update the state
         setCarpoolDetails(carpool[0]);
     };
 
     const handleConfirmBooking = async () => {
-        // Confirm booking logic here (e.g., save the booking in the database)
-
         const { error } = await supabase
-      .from('CarpoolMembers')
-      .insert({
-        carpool_id: carpoolDetails.id, // The carpool group ID
-        member_username: username, // Replace with the actual user joining (e.g., from auth)
-      });
+            .from('CarpoolMembers')
+            .insert({
+                carpool_id: carpoolDetails.id,
+                member_username: username,
+            });
 
-    if (error) {
-      Alert.alert('Error', 'Failed to confirm booking. Please try again.');
-      return;
-    }
-        
-        // Reset states and close modal after booking
+        if (error) {
+            Alert.alert('Error', 'Failed to confirm booking. Please try again.');
+            return;
+        }
+
         Alert.alert('Success', 'You have successfully joined the private carpool!');
         setCarpoolDetails(null);
         setModalVisible(false);
@@ -59,7 +57,9 @@ const DashboardScreen = () => {
 
     return (
         <View style={tw`bg-white h-full`}>
-            <View style={tw`p-5`}>
+            <Animatable.View 
+                style={tw`p-5`} 
+            >
                 <Image 
                     style={{
                         width: 100,
@@ -68,29 +68,49 @@ const DashboardScreen = () => {
                     }}
                     source={require('../assets/Logo.png')}
                 />
-            </View>
+            </Animatable.View>
 
             <View style={styles.container}>
-                <Image
+                <Animatable.Image
                     style={{ width: 120, height: 120, resizeMode: "contain" }}
                     source={require('../assets/join.png')}
+                    animation="bounceIn" 
+                    duration={1500}
                 />
-                <Text style={styles.title}>Dashboard</Text>
-                <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('UserCarpoolGroups', { username })}>
+                <Animatable.Text 
+                    style={styles.title} 
+                    animation="fadeIn" 
+                    duration={1000}
+                >
+                    Dashboard
+                </Animatable.Text>
+                
+                <TouchableOpacity 
+                    style={styles.button} 
+                    onPress={() => navigation.navigate('UserCarpoolGroups', { username })}
+                >
                     <Text style={styles.buttonText}>Your Carpools</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('JoinedCarpoolGroups', { username })}>
+                <TouchableOpacity 
+                    style={styles.button} 
+                    onPress={() => navigation.navigate('JoinedCarpoolGroups', { username })}
+                >
                     <Text style={styles.buttonText}>Joined Carpools</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('UserVehicles', { username })}>
+                <TouchableOpacity 
+                    style={styles.button} 
+                    onPress={() => navigation.navigate('UserVehicles', { username })}
+                >
                     <Text style={styles.buttonText}>Your Vehicle</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.button} onPress={() => setModalVisible(true)}>
+                <TouchableOpacity 
+                    style={styles.button} 
+                    onPress={() => setModalVisible(true)}
+                >
                     <Text style={styles.buttonText}>Join Private Carpool</Text>
                 </TouchableOpacity>
             </View>
 
-            {/* Modal for entering password */}
             <Modal
                 animationType="slide"
                 transparent={true}
@@ -98,7 +118,11 @@ const DashboardScreen = () => {
                 onRequestClose={() => setModalVisible(false)}
             >
                 <View style={styles.modalContainer}>
-                    <View style={styles.modalView}>
+                    <Animatable.View 
+                        style={styles.modalView} 
+                        animation="slideInUp" 
+                        duration={500}
+                    >
                         <Text style={tw`text-lg font-bold mb-4`}>Enter Password</Text>
                         <TextInput
                             style={styles.input}
@@ -124,9 +148,10 @@ const DashboardScreen = () => {
                         <TouchableOpacity style={styles.cancelButton} onPress={() => setModalVisible(false)}>
                             <Text style={styles.cancelButtonText}>Cancel</Text>
                         </TouchableOpacity>
-                    </View>
+                    </Animatable.View>
                 </View>
             </Modal>
+            <BottomTabNavigator username={username}/>
         </View>
     );
 };
@@ -150,6 +175,7 @@ const styles = StyleSheet.create({
         width: '100%',
         alignItems: 'center',
         marginBottom: 15,
+        transition: 'background-color 0.3s',
     },
     buttonText: {
         color: '#fff',

@@ -5,6 +5,7 @@ import tw from 'tailwind-react-native-classnames';
 import { supabase } from '../lib/supabase';
 import { selectTravelTimeInformation, selectOrigin, selectDestination } from '../slices/navSlice';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { Icon } from 'react-native-elements'; // Import Icon component
 
 const CreateCarpoolGroup = ({ navigation, route }) => {
   const [groupName, setGroupName] = useState('');
@@ -47,8 +48,8 @@ const CreateCarpoolGroup = ({ navigation, route }) => {
   const handleCreateGroup = async () => {
     // Ensure all fields are filled
     if (!groupName || !seats || !origin || !destination || !vehicleId) {
-        Alert.alert('Error', 'All fields are required.');
-        return;
+      Alert.alert('Error', 'All fields are required.');
+      return;
     }
 
     setLoading(true);
@@ -59,24 +60,24 @@ const CreateCarpoolGroup = ({ navigation, route }) => {
 
     // Insert carpool group data into the CreateCarpool table
     const { error } = await supabase
-        .from('CreateCarpool') // Ensure this table exists in your Supabase database
-        .insert([{
-            group_name: groupName,
-            seats: seats,
-            is_private: isPrivate,
-            origin: origin.description,
-            destination: destination.description,
-            schedule_time: scheduleDate.toISOString(), // Save the scheduled time in ISO format
-            owner: username, // Save the username to the database
-            distance: distanceValue, // Save the distance as a float
-            vehicle_id: vehicleId // Include selected vehicle ID
-        }]);
+      .from('CreateCarpool') // Ensure this table exists in your Supabase database
+      .insert([{
+        group_name: groupName,
+        seats: seats,
+        is_private: isPrivate,
+        origin: origin.description,
+        destination: destination.description,
+        schedule_time: scheduleDate.toISOString(), // Save the scheduled time in ISO format
+        owner: username, // Save the username to the database
+        distance: distanceValue, // Save the distance as a float
+        vehicle_id: vehicleId // Include selected vehicle ID
+      }]);
 
     if (error) {
-        console.error('Error saving carpool group:', error);
-        Alert.alert('Error', 'Failed to create carpool group.');
-        setLoading(false);
-        return; // Ensure to stop execution on error
+      console.error('Error saving carpool group:', error);
+      Alert.alert('Error', 'Failed to create carpool group.');
+      setLoading(false);
+      return; // Ensure to stop execution on error
     }
 
     // Clear input fields after successful creation
@@ -89,8 +90,7 @@ const CreateCarpoolGroup = ({ navigation, route }) => {
     Alert.alert('Success', 'Carpool group created successfully!');
     navigation.goBack();
     setLoading(false);
-};
-
+  };
 
   const showDatepicker = () => {
     setShowDatePicker(true);
@@ -116,22 +116,29 @@ const CreateCarpoolGroup = ({ navigation, route }) => {
     <View style={[tw`flex-1 p-5 bg-white`]}>
       <Text style={tw`text-2xl font-bold mb-4`}>Create a Carpool Group</Text>
       
-      <TextInput
-        style={tw`border border-gray-300 p-2 mb-4 rounded-lg`}
-        placeholder="Group Name"
-        value={groupName}
-        onChangeText={setGroupName}
-      />
-      
-      <TextInput
-        style={tw`border border-gray-300 p-2 mb-4 rounded-lg`}
-        placeholder="Available Seats"
-        value={seats}
-        onChangeText={setSeats}
-        keyboardType="numeric" // Numeric input for seats
-      />
+      <View style={tw`flex-row items-center border border-gray-300 p-2 mb-4 rounded-lg`}>
+        <Icon name='group' type='material' color='#003B36' />
+        <TextInput
+          style={tw`flex-1 ml-2`}
+          placeholder="Group Name"
+          value={groupName}
+          onChangeText={setGroupName}
+        />
+      </View>
+
+      <View style={tw`flex-row items-center border border-gray-300 p-2 mb-4 rounded-lg`}>
+        <Icon name='people' type='material' color='#003B36' />
+        <TextInput
+          style={tw`flex-1 ml-2`}
+          placeholder="Available Seats"
+          value={seats}
+          onChangeText={setSeats}
+          keyboardType="numeric" // Numeric input for seats
+        />
+      </View>
       
       <View style={tw`flex-row items-center mb-4`}>
+        <Icon name='lock' type='material' color='#003B36' />
         <Text style={tw`mr-2`}>Private Group:</Text>
         <Switch
           value={isPrivate}
@@ -141,8 +148,11 @@ const CreateCarpoolGroup = ({ navigation, route }) => {
         />
       </View>
 
-      <TouchableOpacity onPress={() => setShowVehicleModal(true)} style={tw`border border-gray-300 p-2 mb-4 rounded-lg`}>
-        <Text>{vehicleId ? vehicles.find(v => v.id === vehicleId)?.vehicle_number : 'Select Vehicle'}</Text>
+      <TouchableOpacity onPress={() => setShowVehicleModal(true)} style={tw`border border-gray-300 p-2 mb-4 rounded-lg flex-row items-center`}>
+        <Icon name='directions-car' type='material' color='#003B36' />
+        <Text style={tw`flex-1 ml-2`}>
+          {vehicleId ? vehicles.find(v => v.id === vehicleId)?.vehicle_number : 'Select Vehicle'}
+        </Text>
       </TouchableOpacity>
 
       <View style={tw`flex-row mb-4`}>
@@ -197,9 +207,10 @@ const CreateCarpoolGroup = ({ navigation, route }) => {
                   setVehicleId(vehicle.id);
                   setShowVehicleModal(false);
                 }}
-                style={tw`border p-2 rounded mb-2`}
+                style={tw`border p-2 rounded mb-2 flex-row items-center`}
               >
-                <Text>{vehicle.vehicle_number} ({vehicle.vehicle_type})</Text>
+                <Icon name='directions-car' type='material' color='#003B36' />
+                <Text className="ml-2">{vehicle.vehicle_number} ({vehicle.vehicle_type})</Text>
               </TouchableOpacity>
             ))}
             <Button title="Close" onPress={() => setShowVehicleModal(false)} />

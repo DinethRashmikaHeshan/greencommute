@@ -8,6 +8,8 @@ import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
 
 const GOOGLE_GEOCODING_API_KEY = 'AIzaSyAlr9ejliXP037xHQtnJ2zscbPGxczkUrM';
+import IconMaterial from 'react-native-vector-icons/MaterialIcons';
+import IconFontAwesome from 'react-native-vector-icons/FontAwesome';
 
 const UserCarpoolGroups = () => {
   const route = useRoute();
@@ -169,39 +171,49 @@ const UserCarpoolGroups = () => {
       <View style={[tw`bg-white p-4 rounded-lg mb-3`, styles.shadow]}>
         <View style={tw`flex-row justify-between`}>
           <Text style={[tw`text-lg font-bold`, { color: '#003B36' }]}>{item.group_name}</Text>
-          <Icon
-            name="car"
-            type="font-awesome"
-            color="#003B36"
-            size={24}
-          />
+          <View style={tw`flex-row justify-between`}>
+            <Button
+              icon={<IconFontAwesome name="edit" color="black" size={18} />}
+              type="clear"
+              onPress={() => openUpdateModal(item)}
+            />
+            <Button
+              icon={<IconFontAwesome name="trash" color="red" size={18} />}
+              type="clear"
+              onPress={() => {
+                Alert.alert('Confirm', 'Are you sure you want to delete this carpool?', [
+                  { text: 'Cancel' },
+                  { text: 'OK', onPress: () => handleDeleteCarpool(item.id) },
+                ]);
+              }}
+            />
+          </View>
         </View>
-        <Text style={tw`text-gray-700`}>Seats: {item.seats}</Text>
-        <Text style={tw`text-gray-700`}>Private: {item.is_private ? 'Yes' : 'No'}</Text>
-        <Text style={tw`text-gray-700`}>From: {item.origin}</Text>
-        <Text style={tw`text-gray-700`}>To: {item.destination}</Text>
-        <Text style={tw`text-gray-700`}>Time: {carpoolDate.toLocaleString()}</Text>
+        <View style={tw`flex-row items-center`}>
+          <IconMaterial name="group" size={18} color="gray" />
+          <Text style={tw`text-gray-700 ml-1`}>Seats: {item.seats}</Text>
+        </View>
+        <View style={tw`flex-row items-center`}>
+          <IconFontAwesome name="lock" size={18} color="gray" />
+          <Text style={tw`text-gray-700 ml-1`}>Private: {item.is_private ? 'Yes' : 'No'}</Text>
+        </View>
+        <View style={tw`flex-row items-center`}>
+          <IconMaterial name="place" size={18} color="gray" />
+          <Text style={tw`text-gray-700 ml-1`}>From: {item.origin}</Text>
+        </View>
+        <View style={tw`flex-row items-center`}>
+          <IconMaterial name="place" size={18} color="gray" />
+          <Text style={tw`text-gray-700 ml-1`}>To: {item.destination}</Text>
+        </View>
+        <View style={tw`flex-row items-center`}>
+          <IconMaterial name="access-time" size={18} color="gray" />
+          <Text style={tw`text-gray-700 ml-1`}>Time: {carpoolDate.toLocaleString()}</Text>
+        </View>
 
         <View style={tw`flex-row mt-4`}>
-          <Button
-            icon={<Icon name="edit" color="black" size={18} />}
-            type="clear"
-            onPress={() => openUpdateModal(item)}
-          />
-          <Button
-            icon={<Icon name="trash" type="font-awesome" color="red" size={18} />}
-            type="clear"
-
-            onPress={() => {
-              Alert.alert('Confirm', 'Are you sure you want to delete this carpool?', [
-                { text: 'Cancel' },
-                { text: 'OK', onPress: () => handleDeleteCarpool(item.id) },
-              ]);
-            }}
-          />
           {item.is_private && (
             <Button
-              icon={<Icon name="send" type="font-awesome" color="white" size={18} />}
+              icon={<IconFontAwesome name="send" color="white" size={18} />}
               buttonStyle={[styles.button, { backgroundColor: '#003B36' }]}
               title=" Invite"
               onPress={() => inviteViaSMS(item)}
@@ -209,8 +221,8 @@ const UserCarpoolGroups = () => {
           )}
           {carpoolDate <= currentDate && (
             <Button
-              icon={<Icon name={item.isStart ? 'stop' : 'play'} type="font-awesome" color="white" size={18} />}
-              buttonStyle={[styles.button, { backgroundColor: item.isStart ? '#FF3B30' : '#28a745' }]}
+              icon={<IconFontAwesome name={item.isStart ? 'stop' : 'play'} color="white" size={18} />}
+              buttonStyle={[styles.button, { backgroundColor: item.isStart ? '#FF3B30' : '#009688' }]}
               title={item.isStart ? ' End Trip' : ' Start Trip'}
               onPress={() => handleToggleTrip(item)}
             />
@@ -249,10 +261,17 @@ const UserCarpoolGroups = () => {
             <TextInput
               style={tw`border border-gray-300 p-3 mb-4 rounded-lg`}
               placeholder="Seats"
+              keyboardType="numeric"
               value={seats}
               onChangeText={setSeats}
-              keyboardType="numeric"
             />
+            <View style={tw`flex-row justify-between mb-4`}>
+              <Text>Private</Text>
+              <Switch
+                value={isPrivate}
+                onValueChange={setIsPrivate}
+              />
+            </View>
             <TextInput
               style={tw`border border-gray-300 p-3 mb-4 rounded-lg`}
               placeholder="Origin"
@@ -267,16 +286,20 @@ const UserCarpoolGroups = () => {
             />
             <TextInput
               style={tw`border border-gray-300 p-3 mb-4 rounded-lg`}
-              placeholder="Scheduled Time"
+              placeholder="Schedule Time"
               value={scheduleTime}
               onChangeText={setScheduleTime}
             />
-            <View style={tw`flex-row items-center mb-4`}>
-              <Switch value={isPrivate} onValueChange={setIsPrivate} />
-              <Text style={tw`ml-2`}>Private</Text>
-            </View>
-            <Button title="Update Carpool" onPress={handleUpdateCarpool} />
-            <Button title="Cancel" onPress={() => setModalVisible(false)} buttonStyle={{ backgroundColor: '#FF3B30' }} />
+            <Button
+              title="Update"
+              onPress={handleUpdateCarpool}
+              buttonStyle={[styles.button, { backgroundColor: '#003B36' }]}
+            />
+            <Button
+              title="Cancel"
+              onPress={() => setModalVisible(false)}
+              buttonStyle={[styles.button, { backgroundColor: '#FF3B30' }]}
+            />
           </View>
         </View>
       </Modal>
@@ -287,14 +310,13 @@ const UserCarpoolGroups = () => {
 const styles = StyleSheet.create({
   shadow: {
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
     shadowOpacity: 0.2,
-    shadowRadius: 5,
-    elevation: 5,
-  },
-  button: {
-    backgroundColor: '#007bff',
-    marginRight: 8,
+    shadowRadius: 1.41,
+    elevation: 2,
   },
   modalContainer: {
     flex: 1,
@@ -308,6 +330,18 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 20,
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  button: {
+    width: '100%',
+    marginVertical: 10,
   },
 });
 

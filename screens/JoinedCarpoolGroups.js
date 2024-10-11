@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, Button, Alert } from 'react-native';
+import { View, Text, FlatList, Button, Alert, TouchableOpacity } from 'react-native';
 import { supabase } from '../lib/supabase';
 import tw from 'tailwind-react-native-classnames';
 import { useRoute } from '@react-navigation/native';
@@ -7,6 +7,8 @@ import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
 
 const GOOGLE_GEOCODING_API_KEY = 'AIzaSyAlr9ejliXP037xHQtnJ2zscbPGxczkUrM';
+import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
+import { color } from 'react-native-elements/dist/helpers';
 
 const JoinedCarpoolGroups = () => {
   const navigation = useNavigation();
@@ -65,8 +67,6 @@ const JoinedCarpoolGroups = () => {
     }
   
     const currentSeats = carpoolData.seats;
-  
-    // Update the available seats
     const newSeats = currentSeats + 1;
   
     const { error: updateError } = await supabase
@@ -80,7 +80,6 @@ const JoinedCarpoolGroups = () => {
       return;
     }
   
-    // Now delete the user from the CarpoolMembers table
     const { error } = await supabase
       .from('CarpoolMembers')
       .delete()
@@ -129,31 +128,49 @@ const JoinedCarpoolGroups = () => {
 
   return (
     <View style={tw`flex-1 p-5 bg-gray-100`}>
-      <Text style={tw`text-2xl font-bold mb-4 text-center`}>Joined Carpools</Text>
+      <Text style={[tw`text-2xl font-bold mb-4 text-center text-green-700`,{ color: '#003B36' }]}>
+        Joined Carpools
+      </Text>
 
       <FlatList
         data={joinedCarpools}
         keyExtractor={(item) => item.carpool_id.toString()}
         renderItem={({ item }) => (
-          <View style={tw`bg-white p-4 rounded-lg mb-2 shadow-lg`}>
-            <Text style={tw`text-lg font-bold mb-1 text-blue-700`}>{item.CreateCarpool.group_name}</Text>
-            <Text style={tw`text-gray-700`}>Available Seats: {item.CreateCarpool.seats}</Text>
-            <Text style={tw`text-gray-700`}>Private Group: {item.CreateCarpool.is_private ? 'Yes' : 'No'}</Text>
-            <Text style={tw`text-gray-700`}>Origin: {item.CreateCarpool.origin}</Text>
-            <Text style={tw`text-gray-700`}>Destination: {item.CreateCarpool.destination}</Text>
-            <Text style={tw`text-gray-700`}>Scheduled Time: {new Date(item.CreateCarpool.schedule_time).toLocaleString()}</Text>
+          <View style={tw`bg-white p-4 rounded-lg mb-3 shadow-lg`}>
+            <View style={tw`flex-row items-center mb-2`}>
+              <Text style={[tw`ml-2 text-lg font-bold `,{ color: '#003B36' }]}>
+                {item.CreateCarpool.group_name}
+              </Text>
+            </View>
+            <Text style={tw`text-gray-700 mb-1`}>
+              <FontAwesome name="users" size={16} color="gray" /> Available Seats: {item.CreateCarpool.seats}
+            </Text>
+            <Text style={tw`text-gray-700 mb-1`}>
+              <FontAwesome name="lock" size={16} color={item.CreateCarpool.is_private ? 'red' : 'green'} /> Private Group: {item.CreateCarpool.is_private ? 'Yes' : 'No'}
+            </Text>
+            <Text style={tw`text-gray-700 mb-1`}>
+              <MaterialIcons name="location-on" size={16} color="gray" /> Origin: {item.CreateCarpool.origin}
+            </Text>
+            <Text style={tw`text-gray-700 mb-1`}>
+              <MaterialIcons name="location-on" size={16} color="gray" /> Destination: {item.CreateCarpool.destination}
+            </Text>
+            <Text style={tw`text-gray-700 mb-1`}>
+              <MaterialIcons name="schedule" size={16} color="gray" /> Scheduled Time: {new Date(item.CreateCarpool.schedule_time).toLocaleString()}
+            </Text>
 
-            {/* Conditionally show Join Ride button when isStart is true */}
             {item.CreateCarpool.isStart && (
-              <Button
-                title="Join Ride"
+              <TouchableOpacity
+                style={[tw`mt-3 p-3 rounded-lg`, { backgroundColor: '#009688' }]}
                 onPress={() => handleJoinRide(item.carpool_id,item.CreateCarpool.origin,item.CreateCarpool.destination)}
-                color="#28a745" // Green color for the "Join Ride" button
-              />
+              >
+                <Text style={tw`text-white text-center font-bold`}>
+                  <FontAwesome name="car" size={16} color="white" /> Join Ride
+                </Text>
+              </TouchableOpacity>
             )}
 
-            <Button
-              title="Leave Carpool"
+            <TouchableOpacity
+              style={tw`mt-3 bg-red-500 p-3 rounded-lg`}
               onPress={() => {
                 Alert.alert(
                   'Confirm Leaving',
@@ -164,8 +181,11 @@ const JoinedCarpoolGroups = () => {
                   ]
                 );
               }}
-              color="#FF3B30" // Red color for the "Leave Carpool" button
-            />
+            >
+              <Text style={tw`text-white text-center font-bold`}>
+                <FontAwesome name="sign-out" size={16} color="white" /> Leave Carpool
+              </Text>
+            </TouchableOpacity>
           </View>
         )}
       />
