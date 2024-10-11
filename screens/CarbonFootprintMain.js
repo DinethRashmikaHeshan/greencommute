@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
 
 const CarbonFootprintMain = ({ route, navigation }) => {
-  const { username, uid } = route.params; // Get username and uid from route params
+  const { username, uid } = route.params; 
 
   return (
     <View style={styles.container}>

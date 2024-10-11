@@ -14,9 +14,6 @@ import CalculateFootprint from "./screens/CalculateFootprint";
 import SetGoals from "./screens/setGoals";
 import PastGoals from "./screens/PastGoals";
 
-import RouteSelectionScreen from "./screens/RouteSelectionScreen";
-import MapScreen from "./screens/MapScreen";
-import DeviationScreen from "./screens/DeviationScreen";
 //carpool Rating
 import CreateReview from "./screens/ExpenseSharing and Rating/CreateReview";
 import Review from "./screens/ExpenseSharing and Rating/Review";

@@ -9,7 +9,7 @@ import {
   changeActiveContact,
 } from './emergencyContactservice';
 
-const EmergencyContactManager = ( {route} ) => {
+const EmergencyContactManager = ({ route }) => {
   const [contacts, setContacts] = useState([]);
   const [newContact, setNewContact] = useState('');
   const [activeContact, setActiveContact] = useState(null);
@@ -17,10 +17,8 @@ const EmergencyContactManager = ( {route} ) => {
   const [selectedContactId, setSelectedContactId] = useState(null);
   const [updatedPhoneNumber, setUpdatedPhoneNumber] = useState('');
   const [isAddMode, setIsAddMode] = useState(true); // Track if modal is for adding or updating
-  const {userId} = route.params;
-  
-  // const userId = "5f43b03e-1728-4c83-a105-9daad55b3c8b";
-  
+  const { userId } = route.params;
+
   useEffect(() => {
     loadContacts();
     console.log(userId);
@@ -143,23 +141,27 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#DFF5E1', // Light green background color
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
     textAlign: 'center',
+    color: '#2E7D32',
+    textShadowColor: '#A8DAB5', // Light shadow color for soft effect
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 5,
   },
   contactItem: {
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     padding: 15,
     marginVertical: 8,
     borderRadius: 10,
     shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    elevation: 3,
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 5,
   },
   contactText: {
     fontSize: 18,
@@ -171,27 +173,27 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   updateButton: {
-    backgroundColor: '#007bff',
+    backgroundColor: '#2E7D32', // Green button
     padding: 10,
     borderRadius: 5,
   },
   activeButton: {
-    backgroundColor: '#28a745',
+    backgroundColor: '#2E7D32', // Green button for active contact
     padding: 10,
     borderRadius: 5,
   },
   inactiveButton: {
-    backgroundColor: '#6c757d',
+    backgroundColor: '#6c757d', // Gray button for inactive contact
     padding: 10,
     borderRadius: 5,
   },
   deleteButton: {
-    backgroundColor: '#dc3545',
+    backgroundColor: '#dc3545', // Red button for delete
     padding: 10,
     borderRadius: 5,
   },
   addButton: {
-    backgroundColor: '#007bff',
+    backgroundColor: '#2E7D32', // Green add button
     padding: 15,
     borderRadius: 5,
     marginTop: 20,

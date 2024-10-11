@@ -12,7 +12,7 @@ import BottomTabNavigator from '../components/BottomTabNavigator';
 
 const HomeScreen = ({ route }) => {
   const dispatch = useDispatch();
-  const { username } = route.params;
+  const { username,uid } = route.params;
   console.log(username);
 
   return (
@@ -63,7 +63,7 @@ const HomeScreen = ({ route }) => {
       </View>
       
       {/* Bottom Tab Navigator */}
-      <BottomTabNavigator username={username}/>
+      <BottomTabNavigator username={username} uid={uid}/>
     </SafeAreaView>
   );
 };

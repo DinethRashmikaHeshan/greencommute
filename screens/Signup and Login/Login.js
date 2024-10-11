@@ -13,6 +13,9 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [userDetails, setUserDetails] = useState({
+    id: '',
+  });
 
   const navigation = useNavigation();
 
@@ -34,6 +37,8 @@ const Login = () => {
       .select('*')
       .eq('username', username)
       .single(); 
+
+    setUserDetails(user)  
 
     if (userError || !user) {
       setSnackbarMessage('Username or password is incorrect.');
@@ -61,7 +66,7 @@ const Login = () => {
     // If login is successful, clear input fields and navigate to the Rating screen
     setUsername('');
     setPassword('');
-    navigation.navigate('HomeScreen', { username }); 
+    navigation.navigate('HomeScreen', { username ,uid:userDetails.id}); 
     setSnackbarMessage('Logged in successfully!');
     setSnackbarVisible(true);
     setLoading(false);

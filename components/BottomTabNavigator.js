@@ -5,9 +5,10 @@ import MaterialIcon from 'react-native-vector-icons/MaterialIcons'; // For Mater
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome'; // For Font Awesome icons
 import { useNavigation } from '@react-navigation/native'; // Import useNavigation
 
-const BottomTabNavigator = ({username}) => {
+const BottomTabNavigator = ({username,uid}) => {
   const navigation = useNavigation(); // Get navigation object
   const [scaleValue] = React.useState(new Animated.Value(1));
+  const userId = username;
 
   const animateButton = () => {
     Animated.spring(scaleValue, {
@@ -27,9 +28,9 @@ const BottomTabNavigator = ({username}) => {
     <View style={styles.container}>
       {[
         { name: 'home', component: Icon, action: () => navigation.navigate('HomeScreen', { username }) }, // Navigate to HomeScreen
-        { name: 'emergency-share', component: MaterialIcon, action: () => console.log('Emergency Share pressed') },
-        { name: 'leaf', component: Icon, action: () => console.log('Leaf pressed') },
-        { name: 'feed', component: MaterialIcon, action: () => console.log('Feed pressed') },
+        { name: 'emergency-share', component: MaterialIcon, action: () => navigation.navigate('Contact', { userId }) },
+        { name: 'leaf', component: Icon, action: () => navigation.navigate('CarbonFootprintMain', { username,uid }) },
+        { name: 'feed', component: MaterialIcon, action: () => navigation.navigate('Rating', { username }) },
       ].map((icon, index) => (
         <TouchableOpacity
           key={index}
