@@ -98,44 +98,77 @@ const UserCarpoolGroups = () => {
   const privateCarpools = carpools.filter(carpool => carpool.is_private);
   const publicCarpools = carpools.filter(carpool => !carpool.is_private);
 
-  const renderCarpool = ({ item }) => (
-    <View style={tw`bg-white p-4 rounded-lg mb-2`}>
-      <Text style={[tw`text-lg font-bold mb-1`, { color: '#003B36' }]}>{item.group_name}</Text>
-      <Text style={tw`text-gray-700`}>Available Seats: {item.seats}</Text>
-      <Text style={tw`text-gray-700`}>Private Group: {item.is_private ? 'Yes' : 'No'}</Text>
-      <Text style={tw`text-gray-700`}>Origin: {item.origin}</Text>
-      <Text style={tw`text-gray-700`}>Destination: {item.destination}</Text>
-      <Text style={tw`text-gray-700`}>Scheduled Time: {new Date(item.schedule_time).toLocaleString()}</Text>
+  const handleToggleTrip = async (carpool) => {
+    const newIsStart = !carpool.isStart; // Toggle the isStart state
+  
+    const { error } = await supabase
+      .from('CreateCarpool')
+      .update({ isStart: newIsStart }) // Set isStart to the new value
+      .eq('id', carpool.id);
+  
+    if (error) {
+      console.error('Error toggling trip state:', error);
+      Alert.alert('Error', 'Failed to update the trip status.');
+      return;
+    }
+  
+    fetchCarpools(); // Refresh the carpools after the update
+    Alert.alert('Success', `Trip ${newIsStart ? 'started' : 'ended'} successfully!`);
+  };
+  
 
-      <View style={tw`flex-row mt-4`}>
-        <View style={tw`flex-1 mr-2`}>
-          <Button title="Edit" onPress={() => openUpdateModal(item)} color="#009688" />
-        </View>
-        <View style={tw`flex-1 mr-2`}>
-          <Button
-            title="Delete"
-            onPress={() => {
-              Alert.alert(
-                'Confirm Deletion',
-                'Are you sure you want to delete this carpool group?',
-                [
-                  { text: 'Cancel' },
-                  { text: 'OK', onPress: () => handleDeleteCarpool(item.id) },
-                ]
-              );
-            }}
-            color="#FF3B30"
-          />
-        </View>
-        {item.is_private && (
-          <View style={tw`flex-1 ml-2`}>
-            <Button title="Invite" onPress={() => inviteViaSMS(item)} color="#003B36" />
+  const renderCarpool = ({ item }) => {
+    const currentDate = new Date(); // Get the current date and time
+    const carpoolDate = new Date(item.schedule_time); // Parse the carpool scheduled time
+  
+    return (
+      <View style={tw`bg-white p-4 rounded-lg mb-2`}>
+        <Text style={[tw`text-lg font-bold mb-1`, { color: '#003B36' }]}>{item.group_name}</Text>
+        <Text style={tw`text-gray-700`}>Available Seats: {item.seats}</Text>
+        <Text style={tw`text-gray-700`}>Private Group: {item.is_private ? 'Yes' : 'No'}</Text>
+        <Text style={tw`text-gray-700`}>Origin: {item.origin}</Text>
+        <Text style={tw`text-gray-700`}>Destination: {item.destination}</Text>
+        <Text style={tw`text-gray-700`}>Scheduled Time: {carpoolDate.toLocaleString()}</Text>
+  
+        <View style={tw`flex-row mt-4`}>
+          <View style={tw`flex-1 mr-2`}>
+            <Button title="Edit" onPress={() => openUpdateModal(item)} color="#009688" />
           </View>
+          <View style={tw`flex-1 mr-2`}>
+            <Button
+              title="Delete"
+              onPress={() => {
+                Alert.alert(
+                  'Confirm Deletion',
+                  'Are you sure you want to delete this carpool group?',
+                  [
+                    { text: 'Cancel' },
+                    { text: 'OK', onPress: () => handleDeleteCarpool(item.id) },
+                  ]
+                );
+              }}
+              color="#FF3B30"
+            />
+          </View>
+          {item.is_private && (
+            <View style={tw`flex-1 ml-2`}>
+              <Button title="Invite" onPress={() => inviteViaSMS(item)} color="#003B36" />
+            </View>
+          )}
+        </View>
+  
+        {/* Conditionally render Start Trip button if carpoolDate is <= currentDate */}
+        {carpoolDate <= currentDate && (
+          <Button
+          title={item.isStart ? 'End Trip' : 'Start Trip'} // Change the button text
+          onPress={() => handleToggleTrip(item)} // Handle toggling the trip status
+          color={item.isStart ? '#FF3B30' : '#28a745'} // Change button color based on trip state
+        />
         )}
       </View>
-    </View>
-  );
-
+    );
+  };
+  
   return (
     <View style={tw`flex-1 p-5`}>
       <Text style={tw`text-2xl font-bold mb-4 text-center`}>Your Carpools</Text>

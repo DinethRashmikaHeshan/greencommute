@@ -73,7 +73,11 @@ const JoinedCarpoolGroups = () => {
     fetchJoinedCarpools(); // Refresh the list of joined carpools
     Alert.alert('Success', 'You have left the carpool group successfully!');
   };
-  
+
+  const handleJoinRide = (carpoolId) => {
+    Alert.alert('Ride Started', 'You have joined the ride successfully!');
+    // Add any additional logic if needed for joining the ride
+  };
 
   return (
     <View style={tw`flex-1 p-5 bg-gray-100`}>
@@ -91,6 +95,15 @@ const JoinedCarpoolGroups = () => {
             <Text style={tw`text-gray-700`}>Destination: {item.CreateCarpool.destination}</Text>
             <Text style={tw`text-gray-700`}>Scheduled Time: {new Date(item.CreateCarpool.schedule_time).toLocaleString()}</Text>
 
+            {/* Conditionally show Join Ride button when isStart is true */}
+            {item.CreateCarpool.isStart && (
+              <Button
+                title="Join Ride"
+                onPress={() => handleJoinRide(item.carpool_id)}
+                color="#28a745" // Green color for the "Join Ride" button
+              />
+            )}
+
             <Button
               title="Leave Carpool"
               onPress={() => {
@@ -103,7 +116,7 @@ const JoinedCarpoolGroups = () => {
                   ]
                 );
               }}
-              color="#FF3B30"
+              color="#FF3B30" // Red color for the "Leave Carpool" button
             />
           </View>
         )}
