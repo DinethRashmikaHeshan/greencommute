@@ -1,14 +1,19 @@
-import React from 'react';
-import { View, TouchableOpacity, Animated, StyleSheet } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons'; // For Ionicons
-import MaterialIcon from 'react-native-vector-icons/MaterialIcons'; // For Material Icons
-import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome'; // For Font Awesome icons
-import { useNavigation } from '@react-navigation/native'; // Import useNavigation
+import React from "react";
+import {
+  View,
+  TouchableOpacity,
+  Animated,
+  StyleSheet,
+  Dimensions,
+} from "react-native";
+import Icon from "react-native-vector-icons/Ionicons"; // For Ionicons
+import MaterialIcon from "react-native-vector-icons/MaterialIcons"; // For Material Icons
+import FontAwesomeIcon from "react-native-vector-icons/FontAwesome"; // For Font Awesome icons
+import { useNavigation } from "@react-navigation/native"; // Import useNavigation
 
-const BottomTabNavigator = ({username,uid}) => {
+const BottomTabNavigator = ({ username, uid }) => {
   const navigation = useNavigation(); // Get navigation object
   const [scaleValue] = React.useState(new Animated.Value(1));
-  const userId = username;
 
   const animateButton = () => {
     Animated.spring(scaleValue, {
@@ -27,10 +32,27 @@ const BottomTabNavigator = ({username,uid}) => {
   return (
     <View style={styles.container}>
       {[
-        { name: 'home', component: Icon, action: () => navigation.navigate('HomeScreen', { username }) }, // Navigate to HomeScreen
-        { name: 'emergency-share', component: MaterialIcon, action: () => navigation.navigate('Contact', { userId }) },
-        { name: 'leaf', component: Icon, action: () => navigation.navigate('CarbonFootprintMain', { username,uid }) },
-        { name: 'feed', component: MaterialIcon, action: () => navigation.navigate('Rating', { username }) },
+        {
+          name: "home",
+          component: Icon,
+          action: () => navigation.navigate("HomeScreen", { username }),
+        },
+        {
+          name: "emergency-share",
+          component: MaterialIcon,
+          action: () => navigation.navigate("Contact", { userId: username }),
+        },
+        {
+          name: "leaf",
+          component: Icon,
+          action: () =>
+            navigation.navigate("CarbonFootprintMain", { username, uid }),
+        },
+        {
+          name: "feed",
+          component: MaterialIcon,
+          action: () => navigation.navigate("Rating", { username }),
+        },
       ].map((icon, index) => (
         <TouchableOpacity
           key={index}
@@ -50,16 +72,25 @@ const BottomTabNavigator = ({username,uid}) => {
 
 const styles = StyleSheet.create({
   container: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+    height: 80, // Increased height
+    flexDirection: "row",
+    justifyContent: "space-around",
     paddingVertical: 10,
     borderTopWidth: 1,
-    borderTopColor: '#E0E0E0',
-    backgroundColor: '#FFFFFF',
+    borderTopColor: "#E0E0E0",
+    backgroundColor: "#FFFFFF",
+    alignItems: "center",
+  },
+  containerBackground: {
+    width: Dimensions.get("window").width,
+    height: 80, // Same height for the SVG
+    position: "absolute",
+    bottom: 0,
+    left: 0,
   },
 });
 
