@@ -201,6 +201,10 @@ const MapScreen = ({ route }) => {
     const phoneNumber = '+94'+userDetails.phone_number;
     Linking.openURL(`whatsapp://send?phone=${phoneNumber}&text=${message}`);
   };
+
+  const endRide = () => {
+    navigation.navigate('Contact',{userId:userId})
+  };
   
   const confirmEmergencyCall = () => {
     Alert.alert('Emergency', 'Are you sure you want to call the police?', [
@@ -226,11 +230,16 @@ const MapScreen = ({ route }) => {
           </View>
           </View>
           <View style={styles.frameWrapper}>
-          <View style={[styles.button, styles.buttonShadowBox]} >
-          <TouchableOpacity onPress={shareLiveLocation}>
-            <Text style={[styles.signUp, styles.signUpTypo]}>Share Ride</Text>
-          </TouchableOpacity>
-          </View>
+            <View style={[styles.button, styles.buttonShadowBox, styles.marginBetweenButtons]}>
+              <TouchableOpacity onPress={shareLiveLocation}>
+                <Text style={[styles.signUp, styles.signUpTypo]}>Share Ride</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={[styles.button, styles.buttonShadowBox, styles.marginBetweenButtons]}>
+              <TouchableOpacity onPress={endRide}>
+                <Text style={[styles.signUp, styles.signUpTypo]}>End Ride</Text>
+              </TouchableOpacity>
+            </View>
           </View>
           </View>
     </View>
@@ -284,6 +293,10 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
+  marginBetweenButtons: {
+    marginHorizontal: 5, // You can adjust this value to change the gap
+  },
+
   bottomSheetContainer: {
     position: 'absolute',
     bottom: 0,
@@ -429,7 +442,7 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     color: Color.neutralWhite,
     textAlign: "center",
-    width: 235
+    width: 115
     },
     button: {
       shadowColor: "rgba(236, 95, 95, 0.25)",
