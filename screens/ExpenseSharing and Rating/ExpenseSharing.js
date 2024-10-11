@@ -32,7 +32,7 @@ const ExpenseSharing = () => {
 
     if (
       isNaN(dist) || 
-      isNaN(efficiency) || 
+      isNaN(efficiency) ||    
       isNaN(price) || 
       isNaN(fee) || 
       isNaN(additional) || 
@@ -46,14 +46,24 @@ const ExpenseSharing = () => {
     // Calculate total fuel cost
     const fuelCost = (dist / efficiency) * price;
 
-    // Total expenses
+    // Total expenses before app charge
     const totalExpenses = fuelCost + fee + additional;
+
+    // Calculate app charge (3% of total expenses)
+    const appCharge = 0.03 * totalExpenses;
+
+    // Total expenses including app charge
+    const totalWithAppCharge = totalExpenses + appCharge;
 
     let shareMessage = '';
 
     if (splitMethod === 'Equal') {
-      const share = totalExpenses / passengers;
-      shareMessage = `Each passenger should pay: Rs.${share.toFixed(2)}`;
+      const share = totalWithAppCharge / passengers;
+      shareMessage = 
+        `Total Expense: Rs.${totalExpenses.toFixed(2)}\n` +
+        `App Charge (3%): Rs.${appCharge.toFixed(2)}\n` +
+        `Total with App Charge: Rs.${totalWithAppCharge.toFixed(2)}\n\n` +
+        `Each passenger should pay: Rs.${share.toFixed(2)}`;
     } else if (splitMethod === 'Owner-priority') {
       const ownerShare = 0.2 * totalExpenses;
       const remainingPassengers = passengers - 1;
@@ -64,11 +74,27 @@ const ExpenseSharing = () => {
       }
 
       const othersShare = (0.8 * totalExpenses) / remainingPassengers;
-      shareMessage = `Owner should pay: Rs.${ownerShare.toFixed(2)}\nEach passenger should pay: Rs.${othersShare.toFixed(2)}`;
+
+      // Calculate app charge share per passenger
+      const appChargePerPassenger = appCharge / passengers;
+
+      const totalOwnerShare = ownerShare + appChargePerPassenger;
+      const totalOthersShare = othersShare + appChargePerPassenger;
+
+      shareMessage = 
+        `Total Expense: Rs.${totalExpenses.toFixed(2)}\n` +
+        `App Charge (3%): Rs.${appCharge.toFixed(2)}\n` +
+        `Total with App Charge: Rs.${totalWithAppCharge.toFixed(2)}\n\n` +
+        `Owner should pay: Rs.${totalOwnerShare.toFixed(2)}\n` +
+        `Each passenger should pay: Rs.${totalOthersShare.toFixed(2)}`;
     } else {
       // Default to equal split if an unknown method is selected
-      const share = totalExpenses / passengers;
-      shareMessage = `Each passenger should pay: Rs.${share.toFixed(2)}`;
+      const share = totalWithAppCharge / passengers;
+      shareMessage = 
+        `Total Expense: Rs.${totalExpenses.toFixed(2)}\n` +
+        `App Charge (3%): Rs.${appCharge.toFixed(2)}\n` +
+        `Total with App Charge: Rs.${totalWithAppCharge.toFixed(2)}\n\n` +
+        `Each passenger should pay: Rs.${share.toFixed(2)}`;
     }
 
     // Display result
@@ -91,7 +117,7 @@ const ExpenseSharing = () => {
             <Text style={styles.label}>Distance (km):</Text>
             <TextInput
               style={styles.input}
-              placeholder="e.g., 150"
+              placeholder="Enter trip distance"
               keyboardType="numeric"
               value={distance}
               onChangeText={setDistance}
@@ -104,7 +130,7 @@ const ExpenseSharing = () => {
             <Text style={styles.label}>Fuel Efficiency (kmpl):</Text>
             <TextInput
               style={styles.input}
-              placeholder="e.g., 15"
+              placeholder="Enter fuel efficiency"
               keyboardType="numeric"
               value={fuelEfficiency}
               onChangeText={setFuelEfficiency}
@@ -117,7 +143,7 @@ const ExpenseSharing = () => {
         <Text style={styles.label}>Fuel Price (per litre):</Text>
         <TextInput
           style={styles.input}
-          placeholder="e.g., 100"
+          placeholder="Enter fuel price per litre"
           keyboardType="numeric"
           value={fuelPrice}
           onChangeText={setFuelPrice}
@@ -131,7 +157,7 @@ const ExpenseSharing = () => {
             <Text style={styles.label}>Toll Fee:</Text>
             <TextInput
               style={styles.input}
-              placeholder="e.g., 200"
+              placeholder="Enter toll fees"
               keyboardType="numeric"
               value={totalFee}
               onChangeText={setTotalFee}
@@ -144,7 +170,7 @@ const ExpenseSharing = () => {
             <Text style={styles.label}>Additional Cost:</Text>
             <TextInput
               style={styles.input}
-              placeholder="e.g., 150"
+              placeholder="Enter other costs"
               keyboardType="numeric"
               value={additionalCost}
               onChangeText={setAdditionalCost}
@@ -157,7 +183,7 @@ const ExpenseSharing = () => {
         <Text style={styles.label}>Passenger Count:</Text>
         <TextInput
           style={styles.input}
-          placeholder="e.g., 4"
+          placeholder="Enter number of passengers"
           keyboardType="numeric"
           value={passengerCount}
           onChangeText={setPassengerCount}
@@ -223,7 +249,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.22,
     shadowRadius: 2.22,
-    paddingTop:0
+    paddingTop: 0,
   },
   label: {
     color: '#333333', // Dark grey for better readability
