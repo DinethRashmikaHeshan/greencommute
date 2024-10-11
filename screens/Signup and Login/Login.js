@@ -61,8 +61,7 @@ const Login = () => {
     // If login is successful, clear input fields and navigate to the Rating screen
     setUsername('');
     setPassword('');
-    const routeDistance = 500;
-    navigation.navigate('Expense', { username, routeDistance }); 
+    navigation.navigate('Rating', { username }); 
     setSnackbarMessage('Logged in successfully!');
     setSnackbarVisible(true);
     setLoading(false);

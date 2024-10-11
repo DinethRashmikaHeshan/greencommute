@@ -50,6 +50,11 @@ export default function App() {
               <Stack.Screen name="SignUp" component={SignUp} />
               <Stack.Screen name="Login" component={Login} />
 
+              {/*Rating*/}
+              <Stack.Screen name="CRating" component={CreateReview} />
+              <Stack.Screen name="Rating" component={Review} />
+              <Stack.Screen name="Test" component={ConnectivityTest} />
+
               {/* expense calculator */}
               <Stack.Screen name="Expense" component={ExpenseSharing} />
 
@@ -79,10 +84,7 @@ export default function App() {
               <Stack.Screen name="Map" component={MapScreen} />
               <Stack.Screen name="Deviation" component={DeviationScreen} />
 
-              {/*Rating*/}
-              <Stack.Screen name="CRating" component={CreateReview} />
-              <Stack.Screen name="Rating" component={Review} />
-              <Stack.Screen name="Test" component={ConnectivityTest} />
+              
 
 
               
