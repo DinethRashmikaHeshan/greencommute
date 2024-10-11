@@ -10,8 +10,11 @@ import {
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { supabase } from '../../lib/supabase'; // Ensure correct path
+import { useNavigation } from '@react-navigation/native'; // Import useNavigation hook
 
-const ExpenseSharing = ({ route }) => {  // Receive username via route.params
+const ExpenseSharing = ({ route }) => {  // Receive route via props
+  const navigation = useNavigation(); // Access navigation
+
   // State variables for form inputs
   const [distance, setDistance] = useState('');
   const [fuelEfficiency, setFuelEfficiency] = useState('');
@@ -21,12 +24,13 @@ const ExpenseSharing = ({ route }) => {  // Receive username via route.params
   const [passengerCount, setPassengerCount] = useState('');
   const [splitMethod, setSplitMethod] = useState('Equal');
 
-  const { username , routeDistance, carpoolId } = route.params; // Extract username from route parameters
+  const { username, routeDistance, carpoolId } = route.params; // Extract username and other params
+
   useEffect(() => {
     if (routeDistance) {
-      setDistance(routeDistance / 1000); // Assuming routeDistance is in meters, convert to kilometers
+      setDistance((routeDistance / 1000).toFixed(2)); // Convert meters to kilometers with 2 decimal places
     }
-    console.log(distance)
+    console.log(distance);
   }, [routeDistance]);
 
   // Function to handle calculation and update the database
@@ -37,7 +41,7 @@ const ExpenseSharing = ({ route }) => {  // Receive username via route.params
     const price = parseFloat(fuelPrice);
     const fee = parseFloat(totalFee);
     const additional = parseFloat(additionalCost);
-    const passengers = parseInt(passengerCount);
+    const passengers = parseInt(passengerCount, 10);
 
     if (
       isNaN(dist) || 
@@ -106,8 +110,23 @@ const ExpenseSharing = ({ route }) => {  // Receive username via route.params
         `Each passenger should pay: Rs.${share.toFixed(2)}`;
     }
 
-    // Display result
-    Alert.alert('Calculation Result', shareMessage);
+    // Display result with Finish button
+    Alert.alert(
+      'Calculation Result',
+      shareMessage,
+      [
+        {
+          text: 'OK',
+          onPress: () => {},
+          style: 'cancel',
+        },
+        {
+          text: 'Finish',
+          onPress: () => navigation.navigate('HomeScreen', { username }),
+        },
+      ],
+      { cancelable: false }
+    );
 
     // Proceed to update the users table in the database
     try {
@@ -173,7 +192,7 @@ const ExpenseSharing = ({ route }) => {  // Receive username via route.params
               value={String(distance)}
               onChangeText={setDistance}
               placeholderTextColor="#a9a9a9"
-              readOnly
+              editable={false} // Make it non-editable
             />
           </View>
 
