@@ -7,14 +7,24 @@ import MapScreen from './screens/MapScreen';
 import DeviationScreen from './screens/DeviationScreen';
 import EmergencyContactManager from './screens/emergencyContactManager';  
 
+//carbon footprint
+import CarbonFootprintMain from "./screens/CarbonFootprintMain";
+import ViewSavings from "./screens/ViewSavings";
+import CalculateFootprint from "./screens/CalculateFootprint";
+import SetGoals from "./screens/setGoals";
+import PastGoals from "./screens/PastGoals";
+
+import RouteSelectionScreen from "./screens/RouteSelectionScreen";
+import MapScreen from "./screens/MapScreen";
+import DeviationScreen from "./screens/DeviationScreen";
 //carpool Rating
-import CreateReview from './screens/ExpenseSharing and Rating/CreateReview';
-import Review from './screens/ExpenseSharing and Rating/Review';
-import ConnectivityTest from './screens/ExpenseSharing and Rating/ConnectivityTest';
+import CreateReview from "./screens/ExpenseSharing and Rating/CreateReview";
+import Review from "./screens/ExpenseSharing and Rating/Review";
+import ConnectivityTest from "./screens/ExpenseSharing and Rating/ConnectivityTest";
 
 //signup and login
-import SignUp from './screens/Signup and Login/Signup';
-import Login from './screens/Signup and Login/Login';
+import SignUp from "./screens/Signup and Login/Signup";
+import Login from "./screens/Signup and Login/Login";
 
 //expense calculator
 import ExpenseSharing from './screens/ExpenseSharing and Rating/ExpenseSharing';
@@ -113,7 +123,18 @@ export default function App() {
                     <Stack.Screen name="Deviation" component={DeviationScreen} />
                     <Stack.Screen name="Contact" component={EmergencyContactManager} />
 
-              
+              {/*Carbon Footprint*/}
+              <Stack.Screen
+                name="CarbonFootprintMain"
+                component={CarbonFootprintMain}
+              />
+              <Stack.Screen name="ViewSavings" component={ViewSavings} />
+              <Stack.Screen
+                name="CalculateFootprint"
+                component={CalculateFootprint}
+              />
+              <Stack.Screen name="SetGoals" component={SetGoals} />
+              <Stack.Screen name="PastGoals" component={PastGoals} />
 
 
               
@@ -128,4 +149,5 @@ export default function App() {
       </NavigationContainer >
     </Provider >
   );
-}
+};
+
