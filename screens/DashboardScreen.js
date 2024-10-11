@@ -4,6 +4,8 @@ import { StyleSheet, View, Text, TouchableOpacity, Modal, TextInput, Alert, Butt
 import { useNavigation, useRoute } from '@react-navigation/native';
 import tw from 'tailwind-react-native-classnames';
 import { supabase } from '../lib/supabase'; // Import Supabase instance
+import BottomTabNavigator from '../components/BottomTabNavigator';
+
 
 const DashboardScreen = () => {
     const navigation = useNavigation();
@@ -127,6 +129,8 @@ const DashboardScreen = () => {
                     </View>
                 </View>
             </Modal>
+            <BottomTabNavigator username={username}/>
+
         </View>
     );
 };
