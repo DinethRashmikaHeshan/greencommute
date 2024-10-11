@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Button, Alert, Modal, TextInput, ImageBackground } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Button, Alert, Modal, TextInput, TouchableOpacity } from 'react-native';
 import { supabase } from '../../lib/supabase';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
-
-const bgImage = require('../../assets/background-image.jpeg');
 
 const Review = ({ route }) => {
   const [reviews, setReviews] = useState([]);
@@ -76,27 +74,24 @@ const Review = ({ route }) => {
   );
 
   return (
-    <ImageBackground 
-      source={bgImage}
-      style={styles.container}
-      imageStyle={styles.backgroundImage}
-    >
+    <View style={styles.container}>
       <Text style={styles.title}>Reviews</Text>
-      <Button title="Create Review" onPress={() => addReview()} color="#2ecc71" />
+      <Button title="Create Review" onPress={() => addReview()} color="#2ecc71" style={[styles.button, styles.createReviewButton]} />
       <ScrollView>
         {reviews.map((review) => (
           <View key={review.id} style={styles.reviewContainer}>
-            <Text style={styles.carpoolName}>Reviewer Name: {review.userID}</Text>
+            <Text style={styles.reviewerName}>Reviewer Name: {review.userID}</Text>
             <Text style={styles.carpoolName}>Carpool Name: {review.carpoolName}</Text>
             <Text style={styles.reviewText}>{review.reviewText}</Text>
             <Text style={styles.rating}>Rating: {review.rating} ⭐</Text>
             {review.userID === currentUser ? (
               <View style={styles.buttonContainer}>
-                <Button title="Update" onPress={() => handleUpdate(review.id)} color="#f39c12" />
+                <Button title="Update" onPress={() => handleUpdate(review.id)} color="#3e8e41" style={styles.updateButton} />
                 <Button
                   title="Delete"
-                  color="#FF5733"
+                  color="#c0392b"
                   onPress={() => deleteReview(review.id)}
+                  style={styles.deleteButton}
                 />
               </View>
             ) : null}
@@ -114,7 +109,7 @@ const Review = ({ route }) => {
           <View style={styles.modalView}>
             <Text style={styles.modalTitle}>{updateReviewID ? 'Update Review' : 'Create a Review'}</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, styles.highlightedCarpoolName]} // Highlighted style for carpool name
               placeholder="Carpool Name"
               value={newCarpoolName}
               editable={false} // Make the input read-only
@@ -134,24 +129,29 @@ const Review = ({ route }) => {
               value={String(newReviewRating)}
               onChangeText={(text) => setNewReviewRating(Number(text))}
             />
-            <Button title={updateReviewID ? "Update" : "Submit"} onPress={updateReviewID ? updateReview : addReview} color="#2ecc71" />
-            <Button title="Cancel" color="#FF5733" onPress={resetForm} />
+            <View style={styles.modalButtonContainer}>
+              <TouchableOpacity onPress={updateReviewID ? updateReview : addReview} style={styles.modalButton}>
+                <Text style={styles.modalButtonText}>{updateReviewID ? 'Update' : 'Submit'}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={resetForm} style={styles.cancelButton}>
+                <Text style={styles.cancelButtonText}>Cancel</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal>
-    </ImageBackground>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  // Main container styles
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#e9f5ee',
+    backgroundColor: '#d5f5e3', // Light green background color
   },
-  backgroundImage: {
-    opacity: 0.8,
-  },
+  // Title style for main headings
   title: {
     fontSize: 28,
     fontWeight: 'bold',
@@ -159,6 +159,26 @@ const styles = StyleSheet.create({
     color: '#2c3e50',
     textAlign: 'center',
   },
+  // General button styles
+  button: {
+    borderRadius: 15, // Increased border radius
+    padding: 10,
+    marginBottom: 15,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+    elevation: 3,
+  },
+  // Create Review button styles
+  createReviewButton: {
+    backgroundColor: '#2ecc71',
+    marginVertical: 10, // Add margin to the Create Review button
+  },
+  // Review container styles
   reviewContainer: {
     marginBottom: 20,
     padding: 10,
@@ -173,10 +193,17 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 2,
   },
+  // Review styles
+  reviewerName: {
+    fontSize: 16,
+    fontWeight: 'bold', // Highlight reviewer name
+    color: '#003B36',
+    marginBottom: 5,
+  },
   carpoolName: {
     fontSize: 16,
-    fontStyle: 'italic',
-    color: '#7f8c8d',
+    fontWeight: 'bold', // Highlight carpool name
+    color: '#27ae60',
     marginBottom: 5,
   },
   reviewText: {
@@ -193,6 +220,16 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginTop: 10,
   },
+  updateButton: {
+    backgroundColor: '#3e8e41', // Matching color with light green
+    width: 120, // Increase width of the Update button
+    borderRadius: 15, // Increased border radius
+  },
+  deleteButton: {
+    backgroundColor: '#c0392b', // Matching color with light green
+    width: 120, // Increase width of the Delete button
+    borderRadius: 15, // Increased border radius
+  },
   modalContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -200,9 +237,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalView: {
-    width: '80%',
-    backgroundColor: 'white',
-    borderRadius: 10,
+    width: '90%',
+    backgroundColor: '#ffffff',
+    borderRadius: 15, // Increased border radius
     padding: 20,
     alignItems: 'center',
     shadowColor: '#000',
@@ -217,18 +254,61 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginBottom: 15,
+    color: '#34495e',
   },
   input: {
     width: '100%',
+    height: 40,
     borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    padding: 10,
+    borderColor: '#bdc3c7',
+    borderRadius: 10, // Increased border radius
+    paddingHorizontal: 10,
     marginBottom: 15,
+    backgroundColor: '#f8f9fa',
+  },
+  highlightedCarpoolName: {
+    color: '#27ae60', // Highlight color for carpool name
+    fontWeight: 'bold', // Make the carpool name bold
+    borderColor: '#2ecc71', // Different border color for carpool name input
+    borderWidth: 1,
   },
   textArea: {
-    height: 100, // Set height for the text area
+    height: 100, // Increased height for multi-line text input
+  },
+  modalButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginTop: 10,
+  },
+  modalButton: {
+    flex: 1,
+    marginHorizontal: 5,
+    backgroundColor: '#2ecc71', // Button background color
+    borderRadius: 15, // Increased border radius
+    padding: 12, // Add padding to buttons
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  cancelButton: {
+    flex: 1,
+    marginHorizontal: 5,
+    backgroundColor: '#FF5733', // Cancel button color
+    borderRadius: 15, // Increased border radius
+    padding: 12, // Add padding to buttons
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  cancelButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
   },
 });
 

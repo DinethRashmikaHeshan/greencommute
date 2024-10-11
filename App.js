@@ -98,20 +98,25 @@ export default function App() {
                             headerShown: false,
                         }} 
                     />
+              {/*Rating*/}
+              <Stack.Screen name="CRating" component={CreateReview} />
+              <Stack.Screen name="Rating" component={Review} />
+              <Stack.Screen name="Test" component={ConnectivityTest} />
+
+              {/* expense calculator */}
+              <Stack.Screen name="Expense" component={ExpenseSharing} />
+
+              
 
                     <Stack.Screen name="RouteSelection" component={RouteSelectionScreen} />
                     <Stack.Screen name="Map" component={MapScreen} />
                     <Stack.Screen name="Deviation" component={DeviationScreen} />
                     <Stack.Screen name="Contact" component={EmergencyContactManager} />
 
-              {/*Rating*/}
-              <Stack.Screen name="CRating" component={CreateReview} />
-              <Stack.Screen name="Rating" component={Review} />
-              <Stack.Screen name="Test" component={ConnectivityTest} />
+              
 
 
-              {/* expense calculator */}
-              <Stack.Screen name="Expense" component={ExpenseSharing} />
+              
 
 
 

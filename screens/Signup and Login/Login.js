@@ -42,6 +42,14 @@ const Login = () => {
       return;
     }
 
+    // Check if the user's 'amountToPay' is greater than 300
+    if (user.amountToPay > 300) {
+      setSnackbarMessage('Please Pay Due.');
+      setSnackbarVisible(true);
+      setLoading(false);
+      return;
+    }
+
     // Compare the input password with the stored plain text password
     if (password !== user.password) {
       setSnackbarMessage('Username or password is incorrect.');
