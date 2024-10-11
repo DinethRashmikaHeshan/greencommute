@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, Button, Alert, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, Button, Alert, TouchableOpacity,SafeAreaView } from 'react-native';
 import { supabase } from '../lib/supabase';
 import tw from 'tailwind-react-native-classnames';
 import { useRoute } from '@react-navigation/native';
@@ -78,6 +78,9 @@ const JoinedCarpoolGroups = () => {
   };
 
   return (
+    <SafeAreaView style={tw`flex-1`}>
+
+    
     <View style={tw`flex-1 p-5 bg-gray-100`}>
       <Text style={[tw`text-2xl font-bold mb-4 text-center text-green-700`,{ color: '#003B36' }]}>
         Joined Carpools
@@ -141,6 +144,7 @@ const JoinedCarpoolGroups = () => {
         )}
       />
     </View>
+    </SafeAreaView>
   );
 };
 

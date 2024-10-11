@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, Button, TextInput, Alert, Modal, StyleSheet, TouchableOpacity } from 'react-native';
+import { SafeAreaView, View, Text, FlatList, Button, TextInput, Alert, Modal, StyleSheet, TouchableOpacity } from 'react-native';
 import { supabase } from '../lib/supabase';
 import tw from 'tailwind-react-native-classnames';
 import { useRoute } from '@react-navigation/native';
@@ -119,100 +119,102 @@ const UserVehicles = () => {
   };
 
   return (
-    <View style={tw`flex-1 p-5 bg-white`}>
-      <Text style={[tw`text-3xl font-bold mb-4 text-center`, { color: '#003B36' }]}>Your Vehicles</Text>
+    <SafeAreaView style={tw`flex-1 bg-white`}>
+      <View style={tw`p-5`}>
+        <Text style={[tw`text-3xl font-bold mb-4 text-center`, { color: '#003B36' }]}>Your Vehicles</Text>
 
-      <Button title="Add a New Vehicle" onPress={() => {
-        clearInputs();
-        setModalVisible(true);
-      }} color="#2C6E49" />
-
-      <FlatList
-        data={vehicles}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <View style={styles.vehicleCard}>
-            <Text style={[tw`text-lg font-bold mb-1`, { color: '#003B36' }]}>Vehicle Number: {item.vehicle_number}</Text>
-            <Text style={tw`text-gray-700`}>Vehicle Type: {item.vehicle_type}</Text>
-            <Text style={tw`text-gray-700`}>Owner: {item.owner_name}</Text>
-            <Text style={tw`text-gray-700`}>Fuel Consumption: {item.fuel_consumption} L/100km</Text>
-            <View style={tw`flex-row  mt-2`}>
-            <View style={tw`flex-1 mr-2`}>
-              <Button title="Edit" onPress={() => handleEditVehicle(item)} color="#009688"/>
-                </View>
-                <View style={tw`flex-1 mr-2`}>
-              <Button title="Delete" onPress={() => handleDeleteVehicle(item.id)} color="#FF3B30" />
-                </View>
-            </View>
-          </View>
-        )}
-        contentContainerStyle={{ paddingBottom: 20 }}
-      />
-
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          setModalVisible(false);
+        <Button title="Add a New Vehicle" onPress={() => {
           clearInputs();
-        }}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalView}>
-            <Text style={[tw`text-lg font-bold mb-2 text-center`, { color: '#003B36' }]}>{editMode ? 'Edit Vehicle' : 'Add a New Vehicle'}</Text>
-            <TextInput
-              placeholder="Vehicle Number"
-              value={vehicleNumber}
-              onChangeText={setVehicleNumber}
-              style={styles.input}
-            />
+          setModalVisible(true);
+        }} color="#2C6E49" />
 
-            <TouchableOpacity
-              onPress={() => setShowDropdown(!showDropdown)}
-              style={styles.dropdown}
-            >
-              <Text style={tw`text-gray-600`}>{vehicleType || "Select Vehicle Type"}</Text>
-            </TouchableOpacity>
-            {showDropdown && (
-              <View style={styles.dropdownList}>
-                {vehicleTypes.map((type) => (
-                  <TouchableOpacity
-                    key={type}
-                    onPress={() => {
-                      setVehicleType(type);
-                      setShowDropdown(false);
-                    }}
-                    style={styles.dropdownItem}
-                  >
-                    <Text>{type}</Text>
-                  </TouchableOpacity>
-                ))}
+        <FlatList
+          data={vehicles}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => (
+            <View style={styles.vehicleCard}>
+              <Text style={[tw`text-lg font-bold mb-1`, { color: '#003B36' }]}>Vehicle Number: {item.vehicle_number}</Text>
+              <Text style={tw`text-gray-700`}>Vehicle Type: {item.vehicle_type}</Text>
+              <Text style={tw`text-gray-700`}>Owner: {item.owner_name}</Text>
+              <Text style={tw`text-gray-700`}>Fuel Consumption: {item.fuel_consumption} L/100km</Text>
+              <View style={tw`flex-row  mt-2`}>
+              <View style={tw`flex-1 mr-2`}>
+                <Button title="Edit" onPress={() => handleEditVehicle(item)} color="#009688"/>
+                  </View>
+                  <View style={tw`flex-1 mr-2`}>
+                <Button title="Delete" onPress={() => handleDeleteVehicle(item.id)} color="#FF3B30" />
+                  </View>
               </View>
-            )}
+            </View>
+          )}
+          contentContainerStyle={{ paddingBottom: 20 }}
+        />
 
-            <TextInput
-              placeholder="Fuel Consumption (L/100km)"
-              value={fuelConsumption}
-              onChangeText={setFuelConsumption}
-              style={styles.input}
-              keyboardType="numeric"
-            />
-            <View style={tw`flex-row mt-4`}>
-            <View style={tw`flex-1 mr-2`}>
-            <Button title={editMode ? "Update Vehicle" : "Add Vehicle"} onPress={handleAddOrUpdateVehicle} color="#009688" />
-            </View>
-            <View style={tw`flex-1 mr-2`}>
-            <Button title="Cancel" onPress={() => {
-              setModalVisible(false);
-              clearInputs();
-            }} color="#003B36" />
-            </View>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => {
+            setModalVisible(false);
+            clearInputs();
+          }}
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalView}>
+              <Text style={[tw`text-lg font-bold mb-2 text-center`, { color: '#003B36' }]}>{editMode ? 'Edit Vehicle' : 'Add a New Vehicle'}</Text>
+              <TextInput
+                placeholder="Vehicle Number"
+                value={vehicleNumber}
+                onChangeText={setVehicleNumber}
+                style={styles.input}
+              />
+
+              <TouchableOpacity
+                onPress={() => setShowDropdown(!showDropdown)}
+                style={styles.dropdown}
+              >
+                <Text style={tw`text-gray-600`}>{vehicleType || "Select Vehicle Type"}</Text>
+              </TouchableOpacity>
+              {showDropdown && (
+                <View style={styles.dropdownList}>
+                  {vehicleTypes.map((type) => (
+                    <TouchableOpacity
+                      key={type}
+                      onPress={() => {
+                        setVehicleType(type);
+                        setShowDropdown(false);
+                      }}
+                      style={styles.dropdownItem}
+                    >
+                      <Text>{type}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              )}
+
+              <TextInput
+                placeholder="Fuel Consumption (L/100km)"
+                value={fuelConsumption}
+                onChangeText={setFuelConsumption}
+                style={styles.input}
+                keyboardType="numeric"
+              />
+              <View style={tw`flex-row mt-4`}>
+              <View style={tw`flex-1 mr-2`}>
+              <Button title={editMode ? "Update Vehicle" : "Add Vehicle"} onPress={handleAddOrUpdateVehicle} color="#009688" />
+              </View>
+              <View style={tw`flex-1 mr-2`}>
+              <Button title="Cancel" onPress={() => {
+                setModalVisible(false);
+                clearInputs();
+              }} color="#003B36" />
+              </View>
+              </View>
             </View>
           </View>
-        </View>
-      </Modal>
-    </View>
+        </Modal>
+      </View>
+    </SafeAreaView>
   );
 };
 
@@ -264,17 +266,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   dropdownList: {
-    position: 'absolute',
-    width: '90%',
-    backgroundColor: 'white',
+    width: '100%',
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#ccc',
     borderRadius: 10,
-    elevation: 3,
-    marginTop: 50,
+    position: 'absolute',
+    top: 100,
   },
   dropdownItem: {
     padding: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    borderBottomColor: '#ccc',
   },
 });
 

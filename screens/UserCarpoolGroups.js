@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Alert, TextInput, Modal, StyleSheet, Switch, Linking, FlatList } from 'react-native';
+import { View, Text, Alert, TextInput, Modal, StyleSheet, Switch, Linking, FlatList, SafeAreaView } from 'react-native';
 import { supabase } from '../lib/supabase';
 import { Button, Icon } from 'react-native-elements';
 import tw from 'tailwind-react-native-classnames';
@@ -181,90 +181,84 @@ const UserCarpoolGroups = () => {
   };
 
   return (
-    <View style={tw`flex-1 p-5`}>
-      <Text style={tw`text-2xl font-bold mb-4 text-center`}>Your Carpools</Text>
+    <SafeAreaView style={tw`flex-1`}>
+      <View style={tw`flex-1 p-5`}>
+        <Text style={tw`text-2xl font-bold mb-4 text-center`}>Your Carpools</Text>
 
-      <FlatList
-        data={carpools}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={renderCarpool}
-      />
+        <FlatList
+          data={carpools}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={renderCarpool}
+        />
 
-      {/* Modal for updating carpool */}
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalView}>
-            <Text style={tw`text-lg font-bold mb-4 text-center`}>Update Carpool</Text>
-            <TextInput
-              style={tw`border border-gray-300 p-3 mb-4 rounded-lg`}
-              placeholder="Group Name"
-              value={groupName}
-              onChangeText={setGroupName}
-            />
-            <TextInput
-              style={tw`border border-gray-300 p-3 mb-4 rounded-lg`}
-              placeholder="Seats"
-              keyboardType="numeric"
-              value={seats}
-              onChangeText={setSeats}
-            />
-            <View style={tw`flex-row justify-between mb-4`}>
-              <Text>Private</Text>
-              <Switch
-                value={isPrivate}
-                onValueChange={setIsPrivate}
+        {/* Modal for updating carpool */}
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => setModalVisible(false)}
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalView}>
+              <Text style={tw`text-lg font-bold mb-4 text-center`}>Update Carpool</Text>
+              <TextInput
+                style={tw`border border-gray-300 p-3 mb-4 rounded-lg`}
+                placeholder="Group Name"
+                value={groupName}
+                onChangeText={setGroupName}
+              />
+              <TextInput
+                style={tw`border border-gray-300 p-3 mb-4 rounded-lg`}
+                placeholder="Seats"
+                value={seats}
+                keyboardType="numeric"
+                onChangeText={setSeats}
+              />
+              <TextInput
+                style={tw`border border-gray-300 p-3 mb-4 rounded-lg`}
+                placeholder="Origin"
+                value={origin}
+                onChangeText={setOrigin}
+              />
+              <TextInput
+                style={tw`border border-gray-300 p-3 mb-4 rounded-lg`}
+                placeholder="Destination"
+                value={destination}
+                onChangeText={setDestination}
+              />
+              <TextInput
+                style={tw`border border-gray-300 p-3 mb-4 rounded-lg`}
+                placeholder="Schedule Time"
+                value={scheduleTime}
+                onChangeText={setScheduleTime}
+              />
+              <View style={tw`flex-row justify-between items-center mb-4`}>
+                <Text>Private Group</Text>
+                <Switch value={isPrivate} onValueChange={setIsPrivate} />
+              </View>
+
+              <Button title="Update" onPress={handleUpdateCarpool} />
+              <Button
+                title="Cancel"
+                onPress={() => setModalVisible(false)}
+                buttonStyle={tw`mt-4`}
+                type="outline"
               />
             </View>
-            <TextInput
-              style={tw`border border-gray-300 p-3 mb-4 rounded-lg`}
-              placeholder="Origin"
-              value={origin}
-              onChangeText={setOrigin}
-            />
-            <TextInput
-              style={tw`border border-gray-300 p-3 mb-4 rounded-lg`}
-              placeholder="Destination"
-              value={destination}
-              onChangeText={setDestination}
-            />
-            <TextInput
-              style={tw`border border-gray-300 p-3 mb-4 rounded-lg`}
-              placeholder="Schedule Time"
-              value={scheduleTime}
-              onChangeText={setScheduleTime}
-            />
-            <Button
-              title="Update"
-              onPress={handleUpdateCarpool}
-              buttonStyle={[styles.button, { backgroundColor: '#003B36' }]}
-            />
-            <Button
-              title="Cancel"
-              onPress={() => setModalVisible(false)}
-              buttonStyle={[styles.button, { backgroundColor: '#FF3B30' }]}
-            />
           </View>
-        </View>
-      </Modal>
-    </View>
+        </Modal>
+      </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   shadow: {
     shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 1.41,
-    elevation: 2,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
   },
   modalContainer: {
     flex: 1,
@@ -277,19 +271,16 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 10,
     padding: 20,
-    alignItems: 'center',
     shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
   },
   button: {
-    width: '100%',
-    marginVertical: 10,
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
   },
 });
 
