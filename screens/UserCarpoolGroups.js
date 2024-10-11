@@ -117,20 +117,7 @@ const UserCarpoolGroups = () => {
       <View style={[tw`bg-white p-4 rounded-lg mb-3`, styles.shadow]}>
         <View style={tw`flex-row justify-between`}>
           <Text style={[tw`text-lg font-bold`, { color: '#003B36' }]}>{item.group_name}</Text>
-          <Icon
-            name="car"
-            type="font-awesome"
-            color="#003B36"
-            size={24}
-          />
-        </View>
-        <Text style={tw`text-gray-700`}>Seats: {item.seats}</Text>
-        <Text style={tw`text-gray-700`}>Private: {item.is_private ? 'Yes' : 'No'}</Text>
-        <Text style={tw`text-gray-700`}>From: {item.origin}</Text>
-        <Text style={tw`text-gray-700`}>To: {item.destination}</Text>
-        <Text style={tw`text-gray-700`}>Time: {carpoolDate.toLocaleString()}</Text>
-
-        <View style={tw`flex-row mt-4`}>
+          <View style={tw`flex-row justify-between`}>
           <Button
             icon={<Icon name="edit" color="black" size={18} />}
             type="clear"
@@ -139,7 +126,6 @@ const UserCarpoolGroups = () => {
           <Button
             icon={<Icon name="trash" type="font-awesome" color="red" size={18} />}
             type="clear"
-
             onPress={() => {
               Alert.alert('Confirm', 'Are you sure you want to delete this carpool?', [
                 { text: 'Cancel' },
@@ -147,6 +133,16 @@ const UserCarpoolGroups = () => {
               ]);
             }}
           />
+          </View>
+        </View>
+        <Text style={tw`text-gray-700`}>Seats: {item.seats}</Text>
+        <Text style={tw`text-gray-700`}>Private: {item.is_private ? 'Yes' : 'No'}</Text>
+        <Text style={tw`text-gray-700`}>From: {item.origin}</Text>
+        <Text style={tw`text-gray-700`}>To: {item.destination}</Text>
+        <Text style={tw`text-gray-700`}>Time: {carpoolDate.toLocaleString()}</Text>
+
+        <View style={tw`flex-row mt-4`}>
+          
           {item.is_private && (
             <Button
               icon={<Icon name="send" type="font-awesome" color="white" size={18} />}
@@ -158,7 +154,7 @@ const UserCarpoolGroups = () => {
           {carpoolDate <= currentDate && (
             <Button
               icon={<Icon name={item.isStart ? 'stop' : 'play'} type="font-awesome" color="white" size={18} />}
-              buttonStyle={[styles.button, { backgroundColor: item.isStart ? '#FF3B30' : '#28a745' }]}
+              buttonStyle={[styles.button, { backgroundColor: item.isStart ? '#FF3B30' : '#009688' }]}
               title={item.isStart ? ' End Trip' : ' Start Trip'}
               onPress={() => handleToggleTrip(item)}
             />
