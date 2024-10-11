@@ -1,5 +1,5 @@
-import { StyleSheet, Text, View, SafeAreaView, TouchableOpacity, Animated ,Image} from 'react-native';
-import React, { useEffect, useRef } from 'react'; // Import useEffect and useRef
+import { StyleSheet, Text, View, SafeAreaView, TouchableOpacity, Animated, Image } from 'react-native';
+import React, { useEffect, useRef } from 'react';
 import tw from 'tailwind-react-native-classnames';
 import { GOOGLE_MAPS_APIKEY } from "@env";
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
@@ -15,17 +15,27 @@ const NavigateCard = ({ route }) => {
     const { username } = route.params;
     const capitalizedUsername = username.charAt(0).toUpperCase() + username.slice(1).toLowerCase();
 
+    // Create ref for GooglePlacesAutocomplete
+    const googlePlacesRef = useRef();
+
     // Animated value for the quote
     const fadeAnim = useRef(new Animated.Value(0)).current;
 
     // Function to trigger fade-in animation
     useEffect(() => {
         Animated.timing(fadeAnim, {
-            toValue: 1, // Fully visible
-            duration: 1500, // Duration of the fade-in
-            useNativeDriver: true, // Use native driver for better performance
+            toValue: 1,
+            duration: 1500,
+            useNativeDriver: true,
         }).start();
     }, [fadeAnim]);
+
+    // Function to handle favorite selection and autofill
+    const handleFavoriteSelection = (destination) => {
+        if (googlePlacesRef.current) {
+            googlePlacesRef.current.setAddressText(destination);
+        }
+    };
 
     return (
         <SafeAreaView style={tw`bg-white flex-1`}>
@@ -36,6 +46,7 @@ const NavigateCard = ({ route }) => {
             <View style={tw`border-t border-gray-200 flex-shrink`}>
                 <View>
                     <GooglePlacesAutocomplete
+                        ref={googlePlacesRef}  // Set ref for GooglePlacesAutocomplete
                         placeholder="Where to?"
                         styles={toInputBoxStyles}
                         fetchDetails={true}
@@ -57,19 +68,18 @@ const NavigateCard = ({ route }) => {
                     />
                 </View>
 
-                <NavFavourite />
+                <NavFavourite onFavoriteSelect={handleFavoriteSelection} />
 
-                {/* Animated Quote */}
                 <Animated.View style={[{ opacity: fadeAnim }, tw`flex items-center justify-center my-4`]}>
-                <Image 
-                    style={{
-                        width: 125,
-                        height: 125,
-                        resizeMode: "contain"
-                    }}
-                    source={require('../assets/saveMoney.png')}
-                />
-            </Animated.View>
+                    <Image 
+                        style={{
+                            width: 125,
+                            height: 125,
+                            resizeMode: "contain"
+                        }}
+                        source={require('../assets/saveMoney.png')}
+                    />
+                </Animated.View>
             </View>
 
             <View style={tw`flex-row bg-white justify-evenly py-2 mt-auto border-t border-gray-100`}>
