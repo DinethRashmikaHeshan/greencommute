@@ -86,7 +86,7 @@ const MapScreen = ({ route }) => {
           setEndingTime(endTime(estimatedTime));
           
 
-          if (distance > 2000000000) {
+          if (distance > 200) {
             navigation.navigate('Deviation',
               {
                 distance:distance,
