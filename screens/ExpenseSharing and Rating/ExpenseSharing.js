@@ -8,7 +8,7 @@ import {
   ScrollView,
   Alert 
 } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
+import DropDownPicker from 'react-native-dropdown-picker';  // Import DropDownPicker
 import { supabase } from '../../lib/supabase'; // Ensure correct path
 import { useNavigation } from '@react-navigation/native'; // Import useNavigation hook
 
@@ -22,7 +22,14 @@ const ExpenseSharing = ({ route }) => {  // Receive route via props
   const [totalFee, setTotalFee] = useState('');
   const [additionalCost, setAdditionalCost] = useState('');
   const [passengerCount, setPassengerCount] = useState('');
+
+  // Dropdown state
+  const [open, setOpen] = useState(false); // Control the dropdown visibility
   const [splitMethod, setSplitMethod] = useState('Equal');
+  const [splitMethods, setSplitMethods] = useState([
+    { label: 'Equal', value: 'Equal' },
+    { label: 'Owner-priority', value: 'Owner-priority' }
+  ]);
 
   const { username, routeDistance, carpoolId } = route.params; // Extract username and other params
 
@@ -30,7 +37,6 @@ const ExpenseSharing = ({ route }) => {  // Receive route via props
     if (routeDistance) {
       setDistance((routeDistance * 1.60934).toFixed(2)); // Convert meters to kilometers with 2 decimal places
     }
-    console.log(distance);
   }, [routeDistance]);
 
   // Function to handle calculation and update the database
@@ -101,7 +107,6 @@ const ExpenseSharing = ({ route }) => {  // Receive route via props
         `Owner should pay: Rs.${totalOwnerShare.toFixed(2)}\n` +
         `Each passenger should pay: Rs.${totalOthersShare.toFixed(2)}`;
     } else {
-      // Default to equal split if an unknown method is selected
       const share = totalWithAppCharge / passengers;
       shareMessage = 
         `Total Expense: Rs.${totalExpenses.toFixed(2)}\n` +
@@ -122,67 +127,42 @@ const ExpenseSharing = ({ route }) => {  // Receive route via props
         },
         {
           text: 'Finish',
-          onPress: () => navigation.navigate('HomeScreen', { username }),
+          onPress: async () => {
+            // Update the CreateCarpool table
+            try {
+              console.log(carpoolId)
+              const { error: updateCarpoolError } = await supabase
+                .from('CreateCarpool')
+                .update({ isStart: false })  // Set isStart to false
+                .eq('id', carpoolId);   // Match by username
+  
+              if (updateCarpoolError) {
+                console.error('Error updating isStart:', updateCarpoolError);
+                Alert.alert('Error', 'Failed to update carpool status.');
+                return;
+              }
+              navigation.navigate('HomeScreen', { username });
+            } catch (error) {
+              console.error('Unexpected error:', error);
+              Alert.alert('Error', 'An unexpected error occurred while updating carpool status.');
+            }
+          },
         },
       ],
       { cancelable: false }
     );
-
-    // Proceed to update the users table in the database
-    try {
-      // Fetch the user record based on username
-      const { data: userData, error: fetchError } = await supabase
-        .from('users')
-        .select('amountToPay')
-        .eq('username', username)
-        .single(); // Assuming usernames are unique
-
-      if (fetchError) {
-        console.error('Error fetching user:', fetchError);
-        Alert.alert('Error', 'Failed to fetch user data.');
-        return;
-      }
-
-      let updatedAmountToPay = appCharge;
-
-      if (userData && userData.amountToPay) {
-        updatedAmountToPay += parseFloat(userData.amountToPay);
-      }
-
-      // Update the user's amountToPay in the database
-      const { error: updateError } = await supabase
-        .from('users')
-        .update({ amountToPay: updatedAmountToPay })
-        .eq('username', username);
-
-      if (updateError) {
-        console.error('Error updating amountToPay:', updateError);
-        Alert.alert('Error', 'Failed to update payment information.');
-        return;
-      }
-
-      console.log(`Updated amountToPay for ${username}: Rs.${updatedAmountToPay.toFixed(2)}`);
-    } catch (error) {
-      console.error('Unexpected error:', error);
-      Alert.alert('Error', 'An unexpected error occurred.');
-    }
   };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {/* Header */}
       <View style={styles.header}>
         <Text style={styles.headerText}>Expense Sharing</Text>
       </View>
 
-      {/* Username display */}
       <Text style={styles.welcomeText}>Welcome, {username}!</Text>
 
-      {/* Form */}
       <View style={styles.form}>
-        {/* Distance and Fuel Efficiency in the same row */}
         <View style={styles.row}>
-          {/* Distance Input */}
           <View style={styles.halfInputContainer}>
             <Text style={styles.label}>Distance (km):</Text>
             <TextInput
@@ -192,11 +172,10 @@ const ExpenseSharing = ({ route }) => {  // Receive route via props
               value={String(distance)}
               onChangeText={setDistance}
               placeholderTextColor="#a9a9a9"
-              editable={false} // Make it non-editable
+              editable={false}
             />
           </View>
 
-          {/* Fuel Efficiency Input */}
           <View style={styles.halfInputContainer}>
             <Text style={styles.label}>Fuel Efficiency (kmpl):</Text>
             <TextInput
@@ -210,7 +189,6 @@ const ExpenseSharing = ({ route }) => {  // Receive route via props
           </View>
         </View>
 
-        {/* Fuel Price Input */}
         <Text style={styles.label}>Fuel Price (per litre):</Text>
         <TextInput
           style={styles.input}
@@ -221,9 +199,7 @@ const ExpenseSharing = ({ route }) => {  // Receive route via props
           placeholderTextColor="#a9a9a9"
         />
 
-        {/* Toll Fee and Additional Cost in the same row */}
         <View style={styles.row}>
-          {/* Toll Fee Input */}
           <View style={styles.halfInputContainer}>
             <Text style={styles.label}>Toll Fee:</Text>
             <TextInput
@@ -236,7 +212,6 @@ const ExpenseSharing = ({ route }) => {  // Receive route via props
             />
           </View>
 
-          {/* Additional Cost Input */}
           <View style={styles.halfInputContainer}>
             <Text style={styles.label}>Additional Cost:</Text>
             <TextInput
@@ -250,7 +225,6 @@ const ExpenseSharing = ({ route }) => {  // Receive route via props
           </View>
         </View>
 
-        {/* Passenger Count Input */}
         <Text style={styles.label}>Passenger Count:</Text>
         <TextInput
           style={styles.input}
@@ -261,21 +235,19 @@ const ExpenseSharing = ({ route }) => {  // Receive route via props
           placeholderTextColor="#a9a9a9"
         />
 
-        {/* Split Method Dropdown */}
         <Text style={styles.label}>Split Method:</Text>
         <View style={styles.pickerContainer}>
-          <Picker
-            selectedValue={splitMethod}
-            onValueChange={(itemValue) => setSplitMethod(itemValue)}
-            style={styles.picker}
-            dropdownIconColor="#28a745"
-          >
-            <Picker.Item label="Equal" value="Equal" />
-            <Picker.Item label="Owner-priority" value="Owner-priority" />
-          </Picker>
+          <DropDownPicker
+            open={open}
+            value={splitMethod}
+            items={splitMethods}
+            setOpen={setOpen}
+            setValue={setSplitMethod}
+            setItems={setSplitMethods}
+            containerStyle={styles.picker}
+          />
         </View>
 
-        {/* Calculate Button */}
         <TouchableOpacity style={styles.button} onPress={handleCalculate}>
           <Text style={styles.buttonText}>Calculate</Text>
         </TouchableOpacity>
@@ -284,92 +256,72 @@ const ExpenseSharing = ({ route }) => {  // Receive route via props
   );
 };
 
-// Styles
 const styles = StyleSheet.create({
   container: {
+    padding: 20,
+    backgroundColor: '#f8f8f8',
     flexGrow: 1,
-    backgroundColor: '#f0f9f0', 
-    padding: 11,
-    paddingTop: 20, 
   },
   header: {
-    backgroundColor: '#28a745', 
-    paddingVertical: 20,
+    backgroundColor: '#4CAF50',
+    padding: 15,
     borderRadius: 10,
     alignItems: 'center',
-    marginBottom: 30,
-    elevation: 3, 
-    shadowColor: '#000', 
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    marginBottom: 20,
   },
   headerText: {
-    color: '#ffffff', 
-    fontSize: 26,
-    fontWeight: '700',
-    letterSpacing: 1,
+    fontSize: 20,
+    color: '#fff',
+    fontWeight: 'bold',
   },
   welcomeText: {
     fontSize: 18,
-    fontWeight: '500',
-    color: '#333333',
-    textAlign: 'center',
     marginBottom: 20,
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
   form: {
-    backgroundColor: '#ffffff', 
-    padding: 15,
-    borderRadius: 10,
-    elevation: 2, 
-    shadowColor: '#000', 
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.23,
-    shadowRadius: 2.62,
+    marginBottom: 20,
   },
   label: {
     fontSize: 16,
-    color: '#333333',
-    fontWeight: '500',
-    marginBottom: 5,
+    marginBottom: 8,
+    color: '#333',
   },
   input: {
+    borderColor: '#ccc',
     borderWidth: 1,
-    borderColor: '#28a745', 
     borderRadius: 8,
     padding: 10,
-    fontSize: 16,
     marginBottom: 20,
-    color: '#000',
+    fontSize: 16,
+    color: '#333',
+    backgroundColor: '#fff',
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
   halfInputContainer: {
-    flex: 1,
-    marginRight: 10,
+    flex: 0.48,
   },
   pickerContainer: {
-    borderWidth: 1,
-    borderColor: '#28a745', 
-    borderRadius: 8,
     marginBottom: 20,
   },
   picker: {
     height: 50,
-    color: '#000',
   },
   button: {
-    backgroundColor: '#28a745', 
-    paddingVertical: 15,
-    borderRadius: 10,
+    backgroundColor: '#4CAF50',
+    paddingVertical: 12,
+    borderRadius: 8,
     alignItems: 'center',
+    marginTop:  100
   },
   buttonText: {
-    color: '#ffffff', 
-    fontSize: 18,
-    fontWeight: '700',
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 
