@@ -300,7 +300,7 @@ const styles = StyleSheet.create({
   updateButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#2980b9',
+    backgroundColor: '#00B807',
     padding: 8,
     borderRadius: 10,
     marginRight: 10,
