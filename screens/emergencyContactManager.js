@@ -141,99 +141,112 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#DFF5E1', // Light green background color
+    backgroundColor: "#DFF5E1", // Light green background color
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 20,
-    textAlign: 'center',
-    color: '#2E7D32',
-    textShadowColor: '#A8DAB5', // Light shadow color for soft effect
+    textAlign: "center",
+    color: "#2E7D32",
+    textShadowColor: "#A8DAB5", // Light shadow color for soft effect
     textShadowOffset: { width: 0, height: 2 },
     textShadowRadius: 5,
+    paddingTop: 10,
   },
   contactItem: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#B2E5B0", // Light green background for contact items
     padding: 15,
     marginVertical: 8,
     borderRadius: 10,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOpacity: 0.3,
     shadowRadius: 5,
     elevation: 5,
   },
   contactText: {
     fontSize: 18,
-    fontWeight: '500',
+    fontWeight: "500",
+    color: "#333", // Darker text for better contrast
   },
   contactActions: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginTop: 10,
   },
   updateButton: {
-    backgroundColor: '#2E7D32', // Green button
+    backgroundColor: "#FFD700", // Gold color for update button
     padding: 10,
-    borderRadius: 5,
+    borderRadius: 10,
   },
   activeButton: {
-    backgroundColor: '#2E7D32', // Green button for active contact
+    backgroundColor: "#2E7D32", // Green button for active contact
     padding: 10,
-    borderRadius: 5,
+    borderRadius: 10,
   },
   inactiveButton: {
-    backgroundColor: '#6c757d', // Gray button for inactive contact
+    backgroundColor: "#6c757d", // Gray button for inactive contact
     padding: 10,
-    borderRadius: 5,
+    borderRadius: 10,
   },
   deleteButton: {
-    backgroundColor: '#dc3545', // Red button for delete
+    backgroundColor: "#FF4500", // Red color for delete button
     padding: 10,
-    borderRadius: 5,
+    borderRadius: 10,
   },
   addButton: {
-    backgroundColor: '#2E7D32', // Green add button
+    backgroundColor: "#2E7D32", // Green add button
     padding: 15,
-    borderRadius: 5,
+    borderRadius: 10,
     marginTop: 20,
-    alignItems: 'center',
+    alignItems: "center",
   },
   buttonText: {
-    color: '#fff',
+    color: "#FFFFFF",
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   input: {
-    backgroundColor: '#fff',
+    backgroundColor: "#FFFFFF",
+    borderRadius: 10,
     padding: 15,
-    borderRadius: 5,
-    fontSize: 18,
-    borderColor: '#ced4da',
+    marginBottom: 15,
+    fontSize: 16,
+    borderColor: "#ced4da",
     borderWidth: 1,
   },
   modalContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.5)",
   },
   modalView: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     padding: 20,
     borderRadius: 10,
-    width: '80%',
+    width: "80%",
   },
   modalTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 15,
+    textAlign: "center",
+    color: "#2E7D32",
   },
   modalButtons: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+    flexDirection: "row",
+    justifyContent: "space-around",
     marginTop: 15,
   },
+  cancelButton: {
+    backgroundColor: "#B0BEC5", // Gray color for cancel button
+    padding: 10,
+    alignItems: "center",
+    borderRadius: 10,
+    marginTop: 10,
+  },
 });
+
 
 export default EmergencyContactManager;
