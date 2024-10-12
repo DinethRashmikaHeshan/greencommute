@@ -17,13 +17,14 @@ const HomeScreen = ({ route }) => {
   console.log(uid);
 
   return (
-    <SafeAreaView style={tw`bg-white h-full`}>
+    <SafeAreaView style={[styles.container,tw`h-full`]}>
       <View style={tw`p-5`}>
         <Image
           style={{
-            width: 100,
-            height: 100,
+            width: 150,
+            height: 150,
             resizeMode: "contain",
+            alignSelf:"center",
           }}
           source={require("../assets/Logo.png")}
         />
@@ -75,4 +76,7 @@ const styles = StyleSheet.create({
   text: {
     color: "blue",
   },
+  container:{
+    backgroundColor: "#DFF5E1"
+  }
 });
